@@ -1,5 +1,5 @@
 [root]
-name = "2DPG"
+name = "Lolpranz"
 version = "0.0.1"
 dependencies = [
  "gl 0.0.1 (git+https://github.com/bjz/gl-rs)",

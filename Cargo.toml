@@ -1,8 +1,8 @@
 [package]
 
-name = "2DPG"
+name = "Lolpranz"
 version = "0.0.1"
-authors = ["Lolirofle <lolipopple@hotmail.com>"]
+authors = ["Lolirofle <lolipopple@hotmail.com>", "Pranz <jesper.fridefors@gmail.com>"]
 
 [dependencies.glfw]
 git = "https://github.com/bjz/glfw-rs.git"
@@ -11,4 +11,4 @@ git = "https://github.com/bjz/glfw-rs.git"
 git = "https://github.com/bjz/gl-rs"
 
 [[bin]]
-name = "2DPG"
+name = "Lolpranz"
