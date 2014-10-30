@@ -1,9 +1,9 @@
 use lolirofle::player::Player;
 use lolirofle::game::gameloop::*;
 use lolirofle::gl::renderer::Renderer;
-use lolirofle::physics::WithPhysics;
 use lolirofle::game::Game;
 use lolirofle::vector::Vector2;
+use lolirofle::object::Wall;
 use gl;
 use glfw;
 use std::mem;
@@ -11,13 +11,10 @@ use std::mem;
 #[deriving(Clone)]
 pub struct TdpgGame{
 	player: Player,
-	pub pixels_per_meter: f32,
-	pub velocity_max: f32,
+    wall  : Wall
 }
 impl Game for TdpgGame{
 	fn update(&mut self,delta_time: f64){
-		let f = Vector2::new(0.0,9.82*self.player.get_mass()*self.pixels_per_meter);
-		self.player.add_force(f);
 		unsafe{//TODO: How to fix efficiently
 			let self2 = mem::transmute(&*self);
 			self.player.update(self2,delta_time);
@@ -30,7 +27,7 @@ impl Game for TdpgGame{
 		self.player.render(renderer);
 	}
 
-	fn event(&mut self,window:&mut glfw::Window,event:glfw::WindowEvent){
+	fn event(&mut self,window:&mut glfw::Window,event:glfw::WindowEvent) {
 		match match event{
 			glfw::KeyEvent(glfw::KeyEscape,_,glfw::Press,_) => {
 				window.set_should_close(true);
@@ -50,8 +47,7 @@ impl Game for TdpgGame{
 	fn init() -> TdpgGame{
 		return TdpgGame{
 			player: Player::new(),
-			pixels_per_meter: 16.0,
-			velocity_max: 54.0,
+            Wall  : Wall::new(Vector2::new(50f32,240),Vector2::new(16f32,16f32)),
 		};
 	}
 }
