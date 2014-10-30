@@ -59,10 +59,6 @@ impl<G: Game + Send + Clone> GameHandlerTrait<G> for GameHandler<G>{
 		let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
 		//Window
-		glfw.window_hint(glfw::ContextVersion(3,2));
-		glfw.window_hint(glfw::OpenglForwardCompat(true));
-		glfw.window_hint(glfw::OpenglProfile(glfw::OpenGlCoreProfile));
-
 		let (mut window,events) = glfw.create_window(640,480,"GLTest",glfw::Windowed)
 			.expect("Failed to create GLFW window.");
 
@@ -73,12 +69,18 @@ impl<G: Game + Send + Clone> GameHandlerTrait<G> for GameHandler<G>{
 
 		//Initialize GL
 		gl::load_with(|s| window.get_proc_address(s));
-		gl::ClearColor(0.0,0.0,0.0,1.0);
+
 		gl::Enable(gl::TEXTURE_2D);
+		gl::Disable(gl::DEPTH_TEST);
+		
+		gl::Disable(gl::LIGHTING);//TODO: Deprecated OpenGL functions?
+		gl::ShadeModel(gl::FLAT);
+
+		gl::ClearColor(0.0,0.0,0.0,1.0);
+		gl::ClearDepth(1.0);
 
 		gl::Enable(gl::BLEND);
 		gl::BlendFunc(gl::SRC_ALPHA,gl::ONE_MINUS_SRC_ALPHA);
-		gl::Disable(gl::DEPTH_TEST);
 
 		{
 			let renderer = Renderer::initiated();

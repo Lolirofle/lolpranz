@@ -5,10 +5,7 @@ version = "0.0.1"
 authors = ["Lolirofle <lolipopple@hotmail.com>", "Pranz <jesper.fridefors@gmail.com>"]
 
 [dependencies.glfw]
-git = "https://github.com/bjz/glfw-rs.git"
+git = "https://github.com/binero/glfw-rs.git"
 
 [dependencies.gl]
 git = "https://github.com/bjz/gl-rs"
-
-[[bin]]
-name = "Lolpranz"
