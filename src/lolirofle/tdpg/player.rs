@@ -1,8 +1,9 @@
+use lolirofle::data::vector::Vector2;
 use lolirofle::game::gameloop::*;
 use lolirofle::gl::renderer::Renderer;
-use lolirofle::object::{Collision, Interactable, Wall, Position};
 use lolirofle::tdpg::TdpgGame;
-use lolirofle::vector::Vector2;
+use lolirofle::tdpg::object;
+use lolirofle::tdpg::object::Position;
 
 #[deriving(Clone)]
 pub struct Player{
@@ -17,7 +18,7 @@ impl Player{
 		};
 	}
 }
-impl Position for Player{
+impl object::Position for Player{
 	fn get_position(&self) -> Vector2<f32>{
 		return self.position;
 	}
@@ -35,12 +36,12 @@ impl Renderable for Player{
 		);
 	}
 }
-impl Collision for Player {
+impl object::Collision for Player {
     fn get_dimensions(&self) -> Vector2<f32> {
         Vector2::new(16f32, 32f32)
     }
 }
-impl Interactable for Player {}
+impl object::Interactable for Player {}
 impl EventHandler for Player{
 	fn event(&mut self,e: Event){
 		match e{
@@ -48,7 +49,7 @@ impl EventHandler for Player{
 				self.velocity = self.velocity-Vector2::new(0.0,f);
 			},
 			Move(v) => {
-				self.velocity = self.velocity+v;
+				self.velocity = v;
 			},
 		}
 	}

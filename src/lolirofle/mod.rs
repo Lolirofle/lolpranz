@@ -1,8 +1,5 @@
-pub mod gl;
-pub mod tdpg;
+pub mod data;
 pub mod game_handler;
 pub mod game;
-
-pub mod object;
-pub mod player;
-pub mod vector;
+pub mod gl;
+pub mod tdpg;

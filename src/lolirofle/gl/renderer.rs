@@ -1,6 +1,6 @@
 extern crate gl;
 use gl::types::*;
-use lolirofle::vector::Vector2;
+use lolirofle::data::vector::Vector2;
 
 pub struct Renderer;
 impl Renderer{

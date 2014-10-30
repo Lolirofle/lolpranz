@@ -1,6 +1,6 @@
 use lolirofle::gl::renderer::Renderer;
 use lolirofle::game::Game;
-use lolirofle::vector::Vector2;
+use lolirofle::data::vector::Vector2;
 
 pub trait Updatable<G: Game>{
 	fn update(&mut self,game: &G,delta_time: f64);

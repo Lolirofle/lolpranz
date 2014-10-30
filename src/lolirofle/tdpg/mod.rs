@@ -1,16 +1,17 @@
-use lolirofle::player::Player;
 use lolirofle::game::gameloop::*;
 use lolirofle::gl::renderer::Renderer;
 use lolirofle::game::Game;
-use lolirofle::vector::Vector2;
-use lolirofle::object::Wall;
+use lolirofle::data::vector::Vector2;
 use gl;
 use glfw;
 use std::mem;
 
+pub mod object;
+pub mod player;
+
 pub struct TdpgGame{
-	player: Player,
-    wall  : Wall
+	player: player::Player,
+    wall  : object::Wall
 }
 impl Game for TdpgGame{
 	fn update(&mut self,delta_time: f64){
@@ -45,8 +46,8 @@ impl Game for TdpgGame{
 
 	fn init() -> TdpgGame{
 		return TdpgGame{
-			player: Player::new(),
-            wall  : Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
+			player: player::Player::new(),
+            wall  : object::Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
 		};
 	}
 }

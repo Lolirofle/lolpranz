@@ -1,4 +1,4 @@
-use lolirofle::vector::Vector2;
+use lolirofle::data::vector::Vector2;
 use lolirofle::gl::renderer::Renderer;
 use lolirofle::game::gameloop::Renderable;
 

@@ -1,6 +1,5 @@
 use lolirofle::game::Game;
 
-pub mod multithreaded;
 pub mod singlethreaded;
 
 pub trait GameHandler<G>
