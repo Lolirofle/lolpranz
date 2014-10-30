@@ -11,14 +11,15 @@ pub trait Collision {
     fn get_dimensions(&self) -> Vector2<f32>;
 }
 
-pub trait Interactable : Collision+ Position {
-    pub fn has_point(&self, Vector2(x,y) : Vector2<f32>) -> bool {
+pub trait Interactable : Collision+Position {
+    fn has_point(&self, v: Vector2<f32>) -> bool {
+        let Vector2(pointX,pointY)   = v;
         let Vector2(x1,y1) = self.get_position();
         let Vector2(x2,y2) = self.get_position() + self.get_dimensions();
         x1 <= pointX && pointX <= x2 && y1 <= pointY && pointY <= y2
     }
 
-    pub fn collides_with<T:Interactable>(&self, other : T, delta_position : Vector2<f32>) -> bool {
+    fn collides_with<T:Interactable>(&self, other : T, delta_position : Vector2<f32>) -> bool {
         let Vector2(self_x1, self_y1) = self.get_position();
         let Vector2(self_x2, self_y2) = self.get_position() + self.get_dimensions();
         let Vector2(other_x1, other_y1) = other.get_position();
@@ -28,14 +29,14 @@ pub trait Interactable : Collision+ Position {
     }
 }
 
-struct Wall {
+pub struct Wall {
     pos       : Vector2<f32>,
     dimension : Vector2<f32>,
 }
 
 impl Wall {
-    fn new(p : Vector2<f32>, d : Vector2<f32>) {
-        Wall {pos : p, dimension : d};
+    pub fn new(p : Vector2<f32>, d : Vector2<f32>) -> Wall {
+        Wall {pos : p, dimension : d}
     }
 }
 

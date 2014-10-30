@@ -10,7 +10,7 @@ use lolirofle::game_handler::GameHandler as GameHandlerTrait;
 use std::io::timer;
 use std::time::Duration;
 
-fn glfw_loop<G: Game + Send + Clone>(
+fn glfw_loop<G: Game>(
 	glfw:        glfw::Glfw,
 	window:      &mut glfw::Window,
 	events:      Receiver<(f64,glfw::WindowEvent)>,
@@ -53,8 +53,8 @@ fn glfw_loop<G: Game + Send + Clone>(
 	}
 }
 
-pub struct GameHandler<G> where G: Game + Send + Clone;
-impl<G: Game + Send + Clone> GameHandlerTrait<G> for GameHandler<G>{
+pub struct GameHandler<G> where G: Game;
+impl<G: Game> GameHandlerTrait<G> for GameHandler<G>{
 	fn run(&self){
 		let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 

@@ -26,7 +26,6 @@ impl Renderer{
 			gl::Vertex2f(x2,y2);
 			gl::Vertex2f(x2,y);
 		gl::End();
-		gl::Recti(0,0,32,32);
 	}
 
 	pub fn init_projection(&self,x:GLint,y:GLint,width:GLuint,height:GLuint){

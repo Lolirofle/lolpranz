@@ -8,7 +8,6 @@ use gl;
 use glfw;
 use std::mem;
 
-#[deriving(Clone)]
 pub struct TdpgGame{
 	player: Player,
     wall  : Wall
@@ -47,7 +46,7 @@ impl Game for TdpgGame{
 	fn init() -> TdpgGame{
 		return TdpgGame{
 			player: Player::new(),
-            Wall  : Wall::new(Vector2::new(50f32,240),Vector2::new(16f32,16f32)),
+            wall  : Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
 		};
 	}
 }
