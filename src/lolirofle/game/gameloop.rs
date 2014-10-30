@@ -12,6 +12,7 @@ pub trait Renderable{
 
 pub enum Event{
 	Move(Vector2<f32>),
+	StopMove,
 	Jump(f32)
 }
 

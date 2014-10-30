@@ -4,6 +4,7 @@ use lolirofle::gl::renderer::Renderer;
 use lolirofle::tdpg::TdpgGame;
 use lolirofle::tdpg::object;
 use lolirofle::tdpg::object::Position;
+use std::num::Zero;
 
 #[deriving(Clone)]
 pub struct Player{
@@ -49,7 +50,10 @@ impl EventHandler for Player{
 				self.velocity = self.velocity-Vector2::new(0.0,f);
 			},
 			Move(v) => {
-				self.velocity = v;
+				self.velocity = self.velocity+v;
+			},
+			StopMove => {//TODO: Stops all movement, not only the player inflicted ones
+				self.velocity = Zero::zero();
 			},
 		}
 	}

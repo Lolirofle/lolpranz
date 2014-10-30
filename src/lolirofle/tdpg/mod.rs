@@ -34,9 +34,12 @@ impl Game for TdpgGame{
 				None
 			},
 			glfw::KeyEvent(glfw::KeySpace,_,glfw::Press,_) |
-			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_) => Some(Jump(20.0*16.0)),
-			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_) => Some(Move(Vector2::new(-10.0*16.0,0.0))),
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_) => Some(Move(Vector2::new( 10.0*16.0,0.0))),
+			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_)  => Some(Jump(20.0*16.0)),
+			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(Move(Vector2::new(-10.0*16.0,0.0))),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(Move(Vector2::new( 10.0*16.0,0.0))),
+			
+			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Release,_) |
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(StopMove),
 			_ => None
 		}{
 			Some(e) => {self.player.event(e);},
