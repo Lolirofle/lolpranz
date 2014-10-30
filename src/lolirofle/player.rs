@@ -4,6 +4,9 @@ use lolirofle::object::{Collision, Interactable, Wall, Position};
 use lolirofle::tdpg::TdpgGame;
 use lolirofle::vector::Vector2;
 
+pub const JUMP_VELOCITY : f32 = 0.6;
+pub const MOVE_MODIFIER  : f32 = 2.0; 
+
 #[deriving(Clone)]
 pub struct Player{
 	position: Vector2<f32>,
@@ -22,7 +25,7 @@ impl Position for Player{
 		return self.position;
 	}
 }
-impl Updatable<TdpgGame> for Player{
+impl<'a> Updatable<TdpgGame<'a>> for Player{
 	fn update(&mut self,game: &TdpgGame,delta_time : f64){
 		self.position = self.position + self.velocity;
     }
@@ -44,12 +47,13 @@ impl Interactable for Player {}
 impl EventHandler for Player{
 	fn event(&mut self,e: Event){
 		match e{
-			Jump(f) => {
-				self.velocity = self.velocity-Vector2::new(0.0,f);
+			Jump => {
+				self.velocity = self.velocity-Vector2::new(0.0,JUMP_VELOCITY);
 			},
 			Move(v) => {
-				self.velocity = self.velocity+v;
+				self.velocity = self.velocity + v * MOVE_MODIFIER;
 			},
+            _ => {}
 		}
 	}
 }

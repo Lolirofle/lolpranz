@@ -12,7 +12,8 @@ pub trait Renderable{
 
 pub enum Event{
 	Move(Vector2<f32>),
-	Jump(f32)
+	Jump,
+    Action,
 }
 
 pub trait EventHandler{
