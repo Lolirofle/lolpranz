@@ -1,6 +1,9 @@
-use lolirofle::data::vector::Vector2;
-use lolirofle::game::gameloop::*;
-use lolirofle::gl::renderer::Renderer;
+extern crate "2dgl"as tdgl;
+
+use tdgl::lolirofle::data::vector::Vector2;
+use tdgl::lolirofle::game::gameloop::*;
+use tdgl::lolirofle::gl::renderer::Renderer;
+use lolirofle::tdpg::event;
 use lolirofle::tdpg::object;
 use lolirofle::tdpg::object::Position;
 use lolirofle::tdpg::TdpgGame;
@@ -55,16 +58,16 @@ impl object::Collision for Player {
 	}
 }
 impl object::Interactable for Player {}
-impl EventHandler for Player{
-	fn event(&mut self,e: Event){
+impl EventHandler<event::Event> for Player{
+	fn event(&mut self,e: event::Event){
 		match e{
-			Jump => {
+			event::Jump => {
 				self.velocity = self.velocity-Vector2::new(0.0,JUMP_VELOCITY);
 			},
-			Move(v) => {
+			event::Move(v) => {
 				self.velocity = self.velocity + v * MOVE_MODIFIER;
 			},
-			StopMove => {//TODO: Stops all movement, not only the player inflicted ones
+			event::StopMove => {//TODO: Stops all movement, not only the player inflicted ones
 				self.velocity = Zero::zero();
 			},
 			_ => {}

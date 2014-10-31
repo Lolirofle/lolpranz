@@ -5,12 +5,14 @@ extern crate core;
 extern crate collections;
 extern crate gl;
 extern crate glfw;
+extern crate "2dgl"as tdgl;
 
 use lolirofle::tdpg::TdpgGame;
-use lolirofle::game_handler::GameHandler as GameHandlerTrait;
-use lolirofle::game_handler::singlethreaded::GameHandler;
+use tdgl::lolirofle::game_handler::GameHandler as GameHandlerTrait;
+use tdgl::lolirofle::game_handler::singlethreaded::GameHandler;
+use tdgl::lolirofle::gl::direct_mode::renderer::Renderer;
 mod lolirofle;
 
 fn main(){
-	GameHandler::<TdpgGame>.run();
+	GameHandler::<TdpgGame,Renderer>.run();
 }

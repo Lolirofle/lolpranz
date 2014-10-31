@@ -1,11 +1,14 @@
-use lolirofle::data::vector::Vector2;
-use lolirofle::game::gameloop::*;
-use lolirofle::game::Game;
-use lolirofle::gl::renderer::Renderer;
+extern crate "2dgl"as tdgl;
+
+use tdgl::lolirofle::data::vector::Vector2;
+use tdgl::lolirofle::game::gameloop::*;
+use tdgl::lolirofle::game::Game;
+use tdgl::lolirofle::gl::renderer::Renderer;
 use gl;
 use glfw;
 use std::mem;
 
+pub mod event;
 pub mod object;
 pub mod player;
 pub mod wall;
@@ -15,7 +18,7 @@ pub struct TdpgGame<'a>{
 	wall          : wall::Wall,
 	renderables   : Vec<&'a mut Renderable + 'a>,
 	updaters      : Vec<&'a mut Updatable<TdpgGame<'a>> + 'a>,
-	event_handlers: Vec<&'a mut EventHandler + 'a>,
+	event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
 }
 
 impl<'a> Game for TdpgGame<'a>{
@@ -39,12 +42,12 @@ impl<'a> Game for TdpgGame<'a>{
 				None
 			},
 			glfw::KeyEvent(glfw::KeySpace,_,glfw::Press,_) |
-			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_)  => Some(Jump),
-			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(Move(Vector2::new(-1.0,0.0))),
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(Move(Vector2::new( 1.0,0.0))),
+			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_)  => Some(event::Jump),
+			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(event::Move(Vector2::new(-1.0,0.0))),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(event::Move(Vector2::new( 1.0,0.0))),
 			
 			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Release,_) |
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(StopMove),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::StopMove),
 			_ => None
 		}{
 			Some(e) => {self.player.event(e);},
