@@ -4,8 +4,9 @@ use lolirofle::object::{Collision, Interactable, Wall, Position};
 use lolirofle::tdpg::TdpgGame;
 use lolirofle::vector::Vector2;
 
-pub const JUMP_VELOCITY : f32 = 0.6;
-pub const MOVE_MODIFIER  : f32 = 2.0; 
+pub const JUMP_VELOCITY : f32 = 6.0;
+pub const MOVE_MODIFIER : f32 = 2.0;
+pub const GRAVITY       : f32 = 0.2;
 
 #[deriving(Clone)]
 pub struct Player{
@@ -28,6 +29,11 @@ impl Position for Player{
 impl<'a> Updatable<TdpgGame<'a>> for Player{
 	fn update(&mut self,game: &TdpgGame,delta_time : f64){
 		self.position = self.position + self.velocity;
+        self.velocity = self.velocity + Vector2(0.0,GRAVITY);
+        let Vector2(vel_x,vel_y) = self.velocity;
+        if vel_y > 400.0 {
+            self.velocity = Vector2(vel_x,0.0)
+        }
     }
 }
 impl Renderable for Player{
