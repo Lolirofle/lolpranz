@@ -3,10 +3,10 @@ extern crate gl;
 extern crate glfw;
 
 use glfw::Context;
-use lolirofle::gl::renderer::Renderer;
 use lolirofle::game::gameloop::*;
 use lolirofle::game::Game;
 use lolirofle::game_handler::GameHandler as GameHandlerTrait;
+use lolirofle::gl::renderer::Renderer;
 use std::io::timer;
 use std::time::Duration;
 

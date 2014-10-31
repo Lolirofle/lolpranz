@@ -11,11 +11,11 @@ pub mod player;
 pub mod wall;
 
 pub struct TdpgGame<'a>{
-	player: player::Player,
-    wall  : wall::Wall,
-    renderables   : Vec<&'a mut Renderable + 'a>,
-    updaters      : Vec<&'a mut Updatable<TdpgGame<'a>> + 'a>,
-    eventHandlers : Vec<&'a mut EventHandler + 'a>,
+	player        : player::Player,
+	wall          : wall::Wall,
+	renderables   : Vec<&'a mut Renderable + 'a>,
+	updaters      : Vec<&'a mut Updatable<TdpgGame<'a>> + 'a>,
+	event_handlers: Vec<&'a mut EventHandler + 'a>,
 }
 
 impl<'a> Game for TdpgGame<'a>{
@@ -55,10 +55,10 @@ impl<'a> Game for TdpgGame<'a>{
 	fn init() -> TdpgGame<'a>{
 		return TdpgGame{
 			player: player::Player::new(),
-            wall  : wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
-            renderables   : Vec::with_capacity(20u),
-            updaters      : Vec::with_capacity(20u),
-            eventHandlers : Vec::with_capacity(20u),
+			wall  : wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
+			renderables   : Vec::with_capacity(20u),
+			updaters      : Vec::with_capacity(20u),
+			event_handlers: Vec::with_capacity(20u),
 		};
 	}
 }

@@ -1,9 +1,9 @@
 use lolirofle::data::vector::Vector2;
 use lolirofle::game::gameloop::*;
 use lolirofle::gl::renderer::Renderer;
-use lolirofle::tdpg::TdpgGame;
 use lolirofle::tdpg::object;
 use lolirofle::tdpg::object::Position;
+use lolirofle::tdpg::TdpgGame;
 use std::num::Zero;
 
 pub const JUMP_VELOCITY : f32 = 6.0;
@@ -33,13 +33,13 @@ impl object::Position for Player{
 impl<'a> Updatable<TdpgGame<'a>> for Player{
 	fn update(&mut self,game: &TdpgGame,delta_time : f64){
 		self.position = self.position + self.velocity;
-        self.velocity = self.velocity + Vector2(0.0,GRAVITY);
-        let Vector2(_,pos_y) = self.position;
-        let Vector2(vel_x,_) = self.velocity;
-        if pos_y > 300.0 {
-            self.velocity = Vector2(vel_x,0.0)
-        }
-    }
+		self.velocity = self.velocity + Vector2(0.0,GRAVITY);
+		let Vector2(_,pos_y) = self.position;
+		let Vector2(vel_x,_) = self.velocity;
+		if pos_y > 300.0 {
+			self.velocity = Vector2(vel_x,0.0)
+		}
+	}
 }
 impl Renderable for Player{
 	fn render(&self,renderer: &Renderer){
@@ -50,9 +50,9 @@ impl Renderable for Player{
 	}
 }
 impl object::Collision for Player {
-    fn get_dimensions(&self) -> Vector2<f32> {
-        Vector2::new(16f32, 32f32)
-    }
+	fn get_dimensions(&self) -> Vector2<f32> {
+		Vector2::new(16f32, 32f32)
+	}
 }
 impl object::Interactable for Player {}
 impl EventHandler for Player{

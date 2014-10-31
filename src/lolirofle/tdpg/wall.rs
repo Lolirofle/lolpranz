@@ -1,11 +1,11 @@
 use lolirofle::data::vector::Vector2;
-use lolirofle::gl::renderer::Renderer;
 use lolirofle::game::gameloop::Renderable;
+use lolirofle::gl::renderer::Renderer;
 use lolirofle::tdpg::object::{Position,Collision,Interactable};
 
 pub struct Wall {
-	pos       : Vector2<f32>,
-	dimension : Vector2<f32>,
+	pos      : Vector2<f32>,
+	dimension: Vector2<f32>,
 }
 
 impl Wall {
