@@ -38,8 +38,8 @@ impl<'a> Game for TdpgGame<'a>{
 			},
 			glfw::KeyEvent(glfw::KeySpace,_,glfw::Press,_) |
 			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_) => Some(Jump),
-			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_) => Some(Move(Vector2::new(-1.0,0.0))),
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_) => Some(Move(Vector2::new( 1.0,0.0))),
+			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(Move(Vector2::new(-1.0,0.0))),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(Move(Vector2::new( 1.0,0.0))),
 			_ => None
 		}{
 			Some(e) => {self.player.event(e);},
