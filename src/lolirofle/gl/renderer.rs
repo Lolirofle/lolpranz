@@ -19,7 +19,6 @@ impl Renderer{
 	pub fn render_rectangle(&self,Vector2(x,y): Vector2<GLfloat>,Vector2(w,h): Vector2<GLfloat>){
 		let x2 = x+w;
 		let y2 = y+h;
-		gl::Color3f(1.0,0.5,1.0);
 		gl::Begin(gl::LINE_LOOP);
 			gl::Vertex2f(x,y);
 			gl::Vertex2f(x,y2);

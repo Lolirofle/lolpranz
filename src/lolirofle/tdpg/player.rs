@@ -6,10 +6,16 @@ use lolirofle::tdpg::object;
 use lolirofle::tdpg::object::Position;
 use std::num::Zero;
 
+pub const JUMP_VELOCITY : f32 = 6.0;
+pub const MOVE_MODIFIER : f32 = 0.3;
+pub const GRAVITY       : f32 = 0.2;
+pub const MAX_X_VELOCITY : f32 = 6.0;
+pub const MAX_Y_VELOCITY : f32 = 10.0;
+
 #[deriving(Clone)]
 pub struct Player{
 	position: Vector2<f32>,
-	velocity: Vector2<f32>
+	velocity: Vector2<f32>,
 }
 impl Player{
 	pub fn new() -> Player{
@@ -24,9 +30,15 @@ impl object::Position for Player{
 		return self.position;
 	}
 }
-impl Updatable<TdpgGame> for Player{
+impl<'a> Updatable<TdpgGame<'a>> for Player{
 	fn update(&mut self,game: &TdpgGame,delta_time : f64){
 		self.position = self.position + self.velocity;
+        self.velocity = self.velocity + Vector2(0.0,GRAVITY);
+        let Vector2(_,pos_y) = self.position;
+        let Vector2(vel_x,_) = self.velocity;
+        if pos_y > 300.0 {
+            self.velocity = Vector2(vel_x,0.0)
+        }
     }
 }
 impl Renderable for Player{
@@ -46,15 +58,16 @@ impl object::Interactable for Player {}
 impl EventHandler for Player{
 	fn event(&mut self,e: Event){
 		match e{
-			Jump(f) => {
-				self.velocity = self.velocity-Vector2::new(0.0,f);
+			Jump => {
+				self.velocity = self.velocity-Vector2::new(0.0,JUMP_VELOCITY);
 			},
 			Move(v) => {
-				self.velocity = self.velocity+v;
+				self.velocity = self.velocity + v * MOVE_MODIFIER;
 			},
 			StopMove => {//TODO: Stops all movement, not only the player inflicted ones
 				self.velocity = Zero::zero();
 			},
+			_ => {}
 		}
 	}
 }

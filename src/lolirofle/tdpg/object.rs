@@ -11,10 +11,10 @@ pub trait Collision {
 
 pub trait Interactable : Collision+Position {
     fn has_point(&self, v: Vector2<f32>) -> bool {
-        let Vector2(pointX,pointY)   = v;
+        let Vector2(point_x,point_y) = v;
         let Vector2(x1,y1) = self.get_position();
         let Vector2(x2,y2) = self.get_position() + self.get_dimensions();
-        x1 <= pointX && pointX <= x2 && y1 <= pointY && pointY <= y2
+        x1 <= point_x && point_x <= x2 && y1 <= point_y && point_y <= y2
     }
 
     fn collides_with<T:Interactable>(&self, other : T, delta_position : Vector2<f32>) -> bool {
