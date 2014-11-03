@@ -29,7 +29,7 @@ impl Renderable for Wall {
 		renderer.render_rectangle(
 			self.get_position(),
 			self.get_dimensions(),
-			)
+		)
 	}
 }
 

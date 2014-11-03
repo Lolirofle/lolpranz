@@ -19,6 +19,9 @@ pub struct TdpgGame<'a>{
 	renderables   : Vec<&'a mut Renderable + 'a>,
 	updaters      : Vec<&'a mut Updatable<TdpgGame<'a>> + 'a>,
 	event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
+
+	gravity: f32,
+	max_velocity: f32,
 }
 
 impl<'a> Game for TdpgGame<'a>{
@@ -33,6 +36,7 @@ impl<'a> Game for TdpgGame<'a>{
 		gl::Clear(gl::COLOR_BUFFER_BIT);
 
 		self.player.render(renderer);
+		self.wall.render(renderer);
 	}
 
 	fn event(&mut self,window:&mut glfw::Window,event:glfw::WindowEvent) {
@@ -62,6 +66,9 @@ impl<'a> Game for TdpgGame<'a>{
 			renderables   : Vec::with_capacity(20u),
 			updaters      : Vec::with_capacity(20u),
 			event_handlers: Vec::with_capacity(20u),
+
+			gravity       : 0.2,
+			max_velocity  : 8.0,
 		};
 	}
 }
