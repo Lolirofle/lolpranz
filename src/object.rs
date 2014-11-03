@@ -1,6 +1,6 @@
 extern crate "2dgl"as tdgl;
 
-use tdgl::lolirofle::data::vector::Vector2;
+use tdgl::data::vector::Vector2;
 
 pub trait Position {
 	fn get_position(&self) -> Vector2<f32>;

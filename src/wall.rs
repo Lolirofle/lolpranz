@@ -1,9 +1,10 @@
 extern crate "2dgl"as tdgl;
 
-use tdgl::lolirofle::data::vector::Vector2;
-use tdgl::lolirofle::game::gameloop::Renderable;
-use tdgl::lolirofle::gl::renderer::Renderer;
-use lolirofle::tdpg::object::{Position,Collision,Interactable};
+use tdgl::data::vector::Vector2;
+use tdgl::game::gameloop::Renderable;
+use tdgl::graphics::renderer::Renderer;
+
+use object::{Position,Collision,Interactable};
 
 pub struct Wall {
 	pos      : Vector2<f32>,

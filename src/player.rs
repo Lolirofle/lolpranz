@@ -1,13 +1,13 @@
 extern crate "2dgl"as tdgl;
 
-use tdgl::lolirofle::data::vector::Vector2;
-use tdgl::lolirofle::game::gameloop::*;
-use tdgl::lolirofle::gl::renderer::Renderer;
-use lolirofle::tdpg::event;
-use lolirofle::tdpg::object;
-use lolirofle::tdpg::object::Position;
-use lolirofle::tdpg::TdpgGame;
+use tdgl::data::vector::Vector2;
+use tdgl::game::gameloop::{Updatable,Renderable,EventHandler};
+use tdgl::graphics::renderer::Renderer;
 use std::num::Zero;
+
+use game::TdpgGame;
+use event;
+use object;
 
 pub const JUMP_VELOCITY : f32 = 6.0;
 pub const MOVE_MODIFIER : f32 = 0.3;
