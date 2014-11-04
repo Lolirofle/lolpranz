@@ -51,7 +51,7 @@ impl<'a> Game for TdpgGame<'a>{
 			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(event::Move( 1.0)),
 			
 			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Release,_) |
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::StopMove),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::Move(0.0)),
 			_ => None
 		}{
 			Some(e) => {self.player.event(e);},
@@ -62,7 +62,7 @@ impl<'a> Game for TdpgGame<'a>{
 	fn init() -> TdpgGame<'a>{
 		return TdpgGame{
 			player        : player::Player::new(),
-			wall          : wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
+			wall          : wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(320.0,16.0)),
 			renderables   : Vec::with_capacity(20u),
 			updatables    : Vec::with_capacity(20u),
 			event_handlers: Vec::with_capacity(20u),

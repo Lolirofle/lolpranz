@@ -14,7 +14,12 @@ pub struct Player{
 	position: Vector2<f32>,
 	velocity: Vector2<f32>,
 
+	//Constants
 	jump_velocity: f32,
+	move_acceleration: f32,
+
+	//States
+	move_velocity: f32,
 }
 impl Player{
 	pub fn new() -> Player{
@@ -23,6 +28,8 @@ impl Player{
 			velocity: Vector2::new(0.0,0.0),
 
 			jump_velocity: 6.0,
+			move_velocity: 0.0,
+			move_acceleration: 0.25,
 		};
 	}
 }
@@ -38,9 +45,29 @@ impl Velocity for Player{
 }
 impl<'a> Update<TdpgGame<'a>> for Player{
 	fn update(&mut self,game: &TdpgGame,delta_time : f64){
+		//TODO: Optimize everything, including finding better methods for doing these things. At least it's working now
+
+		//Gravity affecting velocity
 		self.velocity = self.velocity + Vector2(0.0,game.gravity);
-		self.velocity.limit_magnitude(game.max_velocity);
+
+		{//Movement affecting velocity //TODO: Turning around while moving makes friction apply to the other direction immediately
+			let Vector2(ref mut vel_x,_) = self.velocity;
+			if (*vel_x).abs() < self.move_velocity.abs(){
+				*vel_x = (self.move_acceleration + vel_x.abs()).min(self.move_velocity.abs())*self.move_velocity.signum();
+				//*vel_x = self.move_velocity;
+			}
+		}
+
+		//Friction affecting velocity
+		let friction = self.velocity.unit()/16.0;
+		if friction.magnitude() < self.velocity.magnitude(){
+			self.velocity = self.velocity - friction;//.limit_magnitude(game.max_velocity);
+		}
+
+		//Velocity affecting position
 		self.position = self.position + self.velocity;
+
+		//Collision checking
 		match self.collision_check(game.wall){
 			Some(Vector2(gap_x,gap_y)) => {
 				let Vector2(ref mut pos_x,ref mut pos_y) = self.position;
@@ -85,11 +112,7 @@ impl EventHandler<event::Event> for Player{
 				self.velocity = self.velocity-Vector2::new(0.0,self.jump_velocity);
 			},
 			event::Move(vel_x) => {
-				self.velocity = self.velocity + Vector2(vel_x * MOVE_VELOCITY,0.0);
-			},
-			event::StopMove => {//TODO: Stops all movement, not only the player inflicted ones, or should the current "velocity" field just store player inflicted velocity? Else separate it.
-				let Vector2(ref mut vel_x,_) = self.velocity;
-				*vel_x = 0.0;
+				self.move_velocity = vel_x*MOVE_VELOCITY;
 			},
 			_ => {}
 		}
