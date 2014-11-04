@@ -68,23 +68,25 @@ impl<'a> Update<TdpgGame<'a>> for Player{
 		self.position = self.position + self.velocity;
 
 		//Collision checking
-		match self.collision_check(game.wall){
-			Some(Vector2(gap_x,gap_y)) => {
-				let Vector2(ref mut pos_x,ref mut pos_y) = self.position;
-				let Vector2(ref mut vel_x,ref mut vel_y) = self.velocity;
+        for ref wall in game.interactables.iter() {
+	        match self.collision_check(**wall){
+		    	Some(Vector2(gap_x,gap_y)) => {
+		    		let Vector2(ref mut pos_x,ref mut pos_y) = self.position;
+		    		let Vector2(ref mut vel_x,ref mut vel_y) = self.velocity;
 
-				if gap_x>0.0 && gap_x<=gap_y{
-					*pos_x -= gap_x * vel_x.signum();
-					*vel_x /= -2.0;
-				}
+		    		if gap_x>0.0 && gap_x<=gap_y{
+		    			*pos_x -= gap_x * vel_x.signum();
+		    			*vel_x /= -2.0;
+		    		}
 
-				if gap_y>0.0 && gap_y<=gap_x{
-					*pos_y -= gap_y * vel_y.signum();
-					*vel_y /= -2.0;
-				}
-			},
-			None => {}
-		}
+		    		if gap_y>0.0 && gap_y<=gap_x{
+		    			*pos_y -= gap_y * vel_y.signum();
+		    			*vel_y /= -2.0;
+		    		}
+		    	},
+		    	None => {}
+		    }
+        }
 	}
 }
 

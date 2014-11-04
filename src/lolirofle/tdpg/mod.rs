@@ -4,6 +4,7 @@ use tdgl::lolirofle::data::vector::Vector2;
 use tdgl::lolirofle::game::gameloop::*;
 use tdgl::lolirofle::game::Game;
 use tdgl::lolirofle::gl::renderer::Renderer;
+use lolirofle::tdpg::object::Interact;
 
 use gl;
 use glfw;
@@ -17,11 +18,10 @@ pub mod wall;
 pub mod dummyhandler;
 
 pub struct TdpgGame<'a>{
-	pub player        : player::Player,
-	pub wall          : wall::Wall,
 	pub renderables   : Vec<Box<Render + 'a>>,
 	pub updatables    : Vec<Box<Update<TdpgGame<'a>> + 'a>>,
 	pub event_handlers: Vec<Box<EventHandler<event::Event> + 'a>>,
+    pub interactables : Vec<Box<Interact + 'a>>,
 
 	pub gravity: f32,
 	pub max_velocity: f32,
@@ -31,16 +31,19 @@ impl<'a> Game for TdpgGame<'a>{
 	fn update(&mut self,delta_time: f64){
 		unsafe{//TODO: How to fix efficiently
 			let self2 = mem::transmute(&*self);
-			self.player.update(self2,delta_time);
-		}
-	}
+			for obj in self.updatables.iter_mut() {
+                obj.update(self2, delta_time);
+            }
+        }
+    }
 
 	fn render(&self,renderer: &Renderer){
 		gl::Clear(gl::COLOR_BUFFER_BIT);
 
-		self.player.render(renderer);
-		self.wall.render(renderer);
-	}
+		for renderable in self.renderables.iter() {
+            renderable.render(renderer);
+        }
+    }
 
 	fn event(&mut self,window:&mut glfw::Window,event:glfw::WindowEvent) {
 		match match event{
@@ -58,10 +61,8 @@ impl<'a> Game for TdpgGame<'a>{
 			_ => None
 		}{
 			Some(e) => {
-                self.player.event(e);
                 for handler in self.event_handlers.iter_mut() {
-                    let ref mut hndl = *handler;
-                    hndl.event(e);
+                    handler.event(e);
                 }
             },
 			None    => {}
@@ -69,18 +70,27 @@ impl<'a> Game for TdpgGame<'a>{
 	}
 
 	fn init() -> TdpgGame<'a>{
+        use lolirofle::tdpg::object::Interact;
 		let mut game = TdpgGame {
-			player        : player::Player::new(),
-			wall          : wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(320.0,16.0)),
 			renderables   : Vec::with_capacity(20u),
 			updatables    : Vec::with_capacity(20u),
 			event_handlers: Vec::with_capacity(20u),
+            interactables : Vec::with_capacity(20u),
 
 			gravity       : 0.2,
 			max_velocity  : 8.0,
 		};
         let mut handler = dummyhandler::DummyHandler::new();
         game.event_handlers.push(box(HEAP) handler);
+        let player = box player::Player::new();
+        let wall   = box wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(320.0,16.0));
+        game.event_handlers.push(player);
+        game.renderables.push(player);
+        game.updatables.push(player);
+        //game.interactables.push(player); Player doesn't collide with itself. But if we're having
+        //multiple players we should do a different workaround
+        game.renderables.push(wall);
+        game.interactables.push(wall);
         game
 	}
 }

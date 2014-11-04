@@ -28,7 +28,7 @@ pub trait Interact: Dimension + Position{
 		y2 >= point_y
 	}
 
-	fn collides_with<T: Interact>(&self, other : T, delta_position : Vector2<f32>) -> bool {
+	fn collides_with(&self, other : &Interact, delta_position : Vector2<f32>) -> bool {
 		let Vector2(self_x1, self_y1) = self.get_position();
 		let Vector2(self_x2, self_y2) = self.get_position() + self.get_dimensions();
 		let Vector2(other_x1, other_y1) = other.get_position() + delta_position;//TODO: Delta position here?
@@ -42,7 +42,7 @@ pub trait Interact: Dimension + Position{
 
 	/// Implementation is based on SAT algorithm.
 	/// Current code only works for axis-aligned rectangles
-	fn collision_check<T: Interact>(&self,other: T) -> Option<Vector2<f32>>{//TODO: REname?
+	fn collision_check(&self,other: &Interact) -> Option<Vector2<f32>>{//TODO: REname?
 		let self_center  = self.get_dimensions()/2.0;
 		let other_center = other.get_dimensions()/2.0;
 		let gap = (self_center + other_center) - ((self.get_position() + self_center) - (other.get_position() + other_center)).abs();//TODO: Able to simplify this expression by mathematical logic?
