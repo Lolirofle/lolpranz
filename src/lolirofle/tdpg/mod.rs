@@ -4,21 +4,24 @@ use tdgl::lolirofle::data::vector::Vector2;
 use tdgl::lolirofle::game::gameloop::*;
 use tdgl::lolirofle::game::Game;
 use tdgl::lolirofle::gl::renderer::Renderer;
+
 use gl;
 use glfw;
 use std::mem;
+use std::boxed::HEAP;
 
 pub mod event;
 pub mod object;
 pub mod player;
 pub mod wall;
+pub mod dummyhandler;
 
 pub struct TdpgGame<'a>{
 	pub player        : player::Player,
 	pub wall          : wall::Wall,
-	pub renderables   : Vec<&'a mut Render + 'a>,
-	pub updatables    : Vec<&'a mut Update<TdpgGame<'a>> + 'a>,
-	pub event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
+	pub renderables   : Vec<Box<Render + 'a>>,
+	pub updatables    : Vec<Box<Update<TdpgGame<'a>> + 'a>>,
+	pub event_handlers: Vec<Box<EventHandler<event::Event> + 'a>>,
 
 	pub gravity: f32,
 	pub max_velocity: f32,
@@ -54,13 +57,19 @@ impl<'a> Game for TdpgGame<'a>{
 			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::StopMove),
 			_ => None
 		}{
-			Some(e) => {self.player.event(e);},
+			Some(e) => {
+                self.player.event(e);
+                for handler in self.event_handlers.iter_mut() {
+                    let ref mut hndl = *handler;
+                    hndl.event(e);
+                }
+            },
 			None    => {}
 		};
 	}
 
 	fn init() -> TdpgGame<'a>{
-		return TdpgGame{
+		let mut game = TdpgGame {
 			player        : player::Player::new(),
 			wall          : wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
 			renderables   : Vec::with_capacity(20u),
@@ -70,5 +79,8 @@ impl<'a> Game for TdpgGame<'a>{
 			gravity       : 0.2,
 			max_velocity  : 8.0,
 		};
+        let mut handler = dummyhandler::DummyHandler::new();
+        game.event_handlers.push(box(HEAP) handler);
+        game
 	}
 }
