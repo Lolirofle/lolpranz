@@ -16,8 +16,8 @@ pub mod wall;
 pub struct TdpgGame<'a>{
 	pub player        : player::Player,
 	pub wall          : wall::Wall,
-	pub renderables   : Vec<&'a mut Renderable + 'a>,
-	pub updaters      : Vec<&'a mut Updatable<TdpgGame<'a>> + 'a>,
+	pub renderables   : Vec<&'a mut Render + 'a>,
+	pub updatables    : Vec<&'a mut Update<TdpgGame<'a>> + 'a>,
 	pub event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
 
 	pub gravity: f32,
@@ -64,7 +64,7 @@ impl<'a> Game for TdpgGame<'a>{
 			player: player::Player::new(),
 			wall  : wall::Wall::new(Vector2::new(50.0,240.0),Vector2::new(16f32,16f32)),
 			renderables   : Vec::with_capacity(20u),
-			updaters      : Vec::with_capacity(20u),
+			updatables      : Vec::with_capacity(20u),
 			event_handlers: Vec::with_capacity(20u),
 
 			gravity       : 0.2,

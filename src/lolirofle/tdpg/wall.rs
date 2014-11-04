@@ -1,9 +1,9 @@
 extern crate "2dgl"as tdgl;
 
 use tdgl::lolirofle::data::vector::Vector2;
-use tdgl::lolirofle::game::gameloop::Renderable;
+use tdgl::lolirofle::game::gameloop::Render;
 use tdgl::lolirofle::gl::renderer::Renderer;
-use lolirofle::tdpg::object::{Position,Collision,Interactable};
+use lolirofle::tdpg::object::{Position,Dimension,Interact};
 
 pub struct Wall {
 	pos      : Vector2<f32>,
@@ -20,11 +20,11 @@ impl Position for Wall {
 	fn get_position(&self) -> Vector2<f32> { self.pos }
 }
 
-impl Collision for Wall {
+impl Dimension for Wall {
 	fn get_dimensions(&self) -> Vector2<f32> { self.dimension }
 }
 
-impl Renderable for Wall {
+impl Render for Wall {
 	fn render(&self, renderer : &Renderer) {
 		renderer.render_rectangle(
 			self.get_position(),
@@ -33,4 +33,4 @@ impl Renderable for Wall {
 	}
 }
 
-impl Interactable for Wall {}
+impl Interact for Wall {}

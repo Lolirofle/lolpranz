@@ -4,7 +4,7 @@ use tdgl::lolirofle::data::vector::Vector2;
 use tdgl::lolirofle::game::gameloop::*;
 use tdgl::lolirofle::gl::renderer::Renderer;
 use lolirofle::tdpg::event;
-use lolirofle::tdpg::object::{Position,Velocity,Collision,Interactable};
+use lolirofle::tdpg::object::{Position,Velocity,Dimension,Interact};
 use lolirofle::tdpg::TdpgGame;
 
 pub const MOVE_VELOCITY : f32 = 1.5;
@@ -36,7 +36,7 @@ impl Velocity for Player{
 		return self.velocity;
 	}
 }
-impl<'a> Updatable<TdpgGame<'a>> for Player{
+impl<'a> Update<TdpgGame<'a>> for Player{
 	fn update(&mut self,game: &TdpgGame,delta_time : f64){
 		self.velocity = self.velocity + Vector2(0.0,game.gravity);
 		self.velocity.limit_magnitude(game.max_velocity);
@@ -61,13 +61,13 @@ impl<'a> Updatable<TdpgGame<'a>> for Player{
 	}
 }
 
-impl Collision for Player{
+impl Dimension for Player{
 	fn get_dimensions(&self) -> Vector2<f32> {
 		Vector2::new(16.0,32.0)
 	}
 }
 
-impl Renderable for Player{
+impl Render for Player{
 	fn render(&self,renderer: &Renderer){
 		renderer.render_rectangle(
 			self.get_position(),
@@ -76,7 +76,7 @@ impl Renderable for Player{
 	}
 }
 
-impl Interactable for Player {}
+impl Interact for Player {}
 
 impl EventHandler<event::Event> for Player{
 	fn event(&mut self,e: event::Event){

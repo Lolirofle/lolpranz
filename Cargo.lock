@@ -10,7 +10,7 @@ dependencies = [
 [[package]]
 name = "2dgl"
 version = "0.0.2"
-source = "git+https://github.com/Lolirofle/2dgl#14f0dfae4d42396382a805fcd756b90b36085134"
+source = "git+https://github.com/Lolirofle/2dgl#c1f0cefe31e4bf92cf9367b85cd01a80eb59fe42"
 dependencies = [
  "gl 0.0.1 (git+https://github.com/bjz/gl-rs)",
  "glfw 0.0.1 (git+https://github.com/bjz/glfw-rs.git)",
