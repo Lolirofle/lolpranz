@@ -14,14 +14,14 @@ pub mod player;
 pub mod wall;
 
 pub struct TdpgGame<'a>{
-	player        : player::Player,
-	wall          : wall::Wall,
-	renderables   : Vec<&'a mut Renderable + 'a>,
-	updaters      : Vec<&'a mut Updatable<TdpgGame<'a>> + 'a>,
-	event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
+	pub player        : player::Player,
+	pub wall          : wall::Wall,
+	pub renderables   : Vec<&'a mut Renderable + 'a>,
+	pub updaters      : Vec<&'a mut Updatable<TdpgGame<'a>> + 'a>,
+	pub event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
 
-	gravity: f32,
-	max_velocity: f32,
+	pub gravity: f32,
+	pub max_velocity: f32,
 }
 
 impl<'a> Game for TdpgGame<'a>{
@@ -47,8 +47,8 @@ impl<'a> Game for TdpgGame<'a>{
 			},
 			glfw::KeyEvent(glfw::KeySpace,_,glfw::Press,_) |
 			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_)  => Some(event::Jump),
-			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(event::Move(Vector2::new(-1.0,0.0))),
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(event::Move(Vector2::new( 1.0,0.0))),
+			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(event::Move(-1.0)),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(event::Move( 1.0)),
 			
 			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Release,_) |
 			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::StopMove),
