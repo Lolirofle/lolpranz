@@ -46,14 +46,14 @@ impl<'a> Update<TdpgGame<'a>> for Player{
 				let Vector2(ref mut pos_x,ref mut pos_y) = self.position;
 				let Vector2(ref mut vel_x,ref mut vel_y) = self.velocity;
 
-				if *vel_x!=0.0 && gap_x>0.0{
+				if gap_x>0.0 && gap_x<=gap_y{
 					*pos_x -= gap_x * vel_x.signum();
-					*vel_x = 0.0;
+					*vel_x /= -2.0;
 				}
 
-				if *vel_y!=0.0 && gap_y>0.0{
+				if gap_y>0.0 && gap_y<=gap_x{
 					*pos_y -= gap_y * vel_y.signum();
-					*vel_y = 0.0;
+					*vel_y /= -2.0;
 				}
 			},
 			None => {}
