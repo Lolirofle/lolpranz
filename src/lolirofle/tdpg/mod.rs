@@ -9,13 +9,15 @@ use lolirofle::tdpg::object::Interact;
 use gl;
 use glfw;
 use std::mem;
-use std::boxed::HEAP;
+use std::collections::HashSet;
 
 pub mod event;
 pub mod object;
 pub mod player;
 pub mod wall;
 pub mod dummyhandler;
+
+pub const TRACKED_KEYS : [glfw::Key, ..2] = [glfw::KeyLeft, glfw::KeyRight];
 
 pub struct TdpgGame<'a>{
 	pub renderables   : Vec<Box<Render + 'a>>,
@@ -25,6 +27,7 @@ pub struct TdpgGame<'a>{
 
 	pub gravity: f32,
 	pub max_velocity: f32,
+	pressed_keys : HashSet<glfw::Key>,
 }
 
 impl<'a> Game for TdpgGame<'a>{
@@ -61,12 +64,29 @@ impl<'a> Game for TdpgGame<'a>{
 			_ => None
 		}{
 			Some(e) => {
-                for handler in self.event_handlers.iter_mut() {
-                    handler.event(e);
+				for handler in self.event_handlers.iter_mut() {
+				handler.event(e);
                 }
             },
 			None    => {}
 		};
+		//store pressed keys in a hashset, remove them when key is released
+		match event{
+			glfw::KeyEvent(key,_,glfw::Press,_)   => self.pressed_keys.insert(key),
+			glfw::Keyevent(key,_,glfw::Release,_) => self.pressed_keys.remove(key),
+			_ => {};
+		}
+		//process event for every key held
+		for key in TRACKED_KEYS.filter(|key : &glfw::Key| { self.pressed_keys.contains(key) }) {
+			//every tracked key _must_ propagate an event, no option here
+			let event = match key {
+				glfw::KeyLeft  => event::Move(-0.2),
+				glfw::KeyRight => event::Move( 0.2),
+			}
+			for handler in self.event_handlers.iter_mut() {
+				handler.event(e);
+			}
+		}
 	}
 
 	fn init() -> TdpgGame<'a>{
@@ -79,6 +99,7 @@ impl<'a> Game for TdpgGame<'a>{
 
 			gravity       : 0.2,
 			max_velocity  : 8.0,
+			pressed_keys  : HashSet::new(),
 		};
         let mut handler = dummyhandler::DummyHandler::new();
         game.event_handlers.push(box(HEAP) handler);
