@@ -11,5 +11,4 @@ git = "https://github.com/bjz/glfw-rs.git"
 git = "https://github.com/bjz/gl-rs"
 
 [dependencies.2dgl]
-# git = "https://github.com/Lolirofle/2dgl"
-path = "/home/edwin/Programming/Rust/2dgl"
+git = "https://github.com/Lolirofle/2dgl"
