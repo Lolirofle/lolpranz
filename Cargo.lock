@@ -12,22 +12,27 @@ name = "2dgl"
 version = "0.0.2"
 dependencies = [
  "gl 0.0.1 (git+https://github.com/bjz/gl-rs)",
- "glfw 0.0.1 (git+https://github.com/bjz/glfw-rs.git)",
 ]
 
 [[package]]
 name = "gl"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#df380704256f6eb9c9cf6850181bb7250995c50a"
+source = "git+https://github.com/bjz/gl-rs#79cd3b3f9f19aa0e39f6af572fc8673a6d9760bc"
 dependencies = [
  "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs)",
 ]
 
 [[package]]
+name = "gl_common"
+version = "0.0.1"
+source = "git+https://github.com/bjz/gl-rs#79cd3b3f9f19aa0e39f6af572fc8673a6d9760bc"
+
+[[package]]
 name = "gl_generator"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#df380704256f6eb9c9cf6850181bb7250995c50a"
+source = "git+https://github.com/bjz/gl-rs#79cd3b3f9f19aa0e39f6af572fc8673a6d9760bc"
 dependencies = [
+ "gl_common 0.0.1 (git+https://github.com/bjz/gl-rs)",
  "khronos_api 0.0.1 (git+https://github.com/bjz/gl-rs)",
  "rust-xml 0.1.0 (git+https://github.com/netvl/rust-xml)",
 ]
@@ -35,7 +40,7 @@ dependencies = [
 [[package]]
 name = "glfw"
 version = "0.0.1"
-source = "git+https://github.com/bjz/glfw-rs.git#848816edfdaf3cca21fbb9172ea6635f623d558c"
+source = "git+https://github.com/bjz/glfw-rs.git#6afb8eadf23e2ae5925e70d364c196ceab653edb"
 dependencies = [
  "glfw-sys 3.0.4 (git+https://github.com/servo/glfw?ref=cargo-3.0.4)",
  "semver 0.1.0 (git+https://github.com/rust-lang/semver)",
@@ -44,17 +49,17 @@ dependencies = [
 [[package]]
 name = "glfw-sys"
 version = "3.0.4"
-source = "git+https://github.com/servo/glfw?ref=cargo-3.0.4#0e13d32555fb72b38ba1dfcff0c65a486510302e"
+source = "git+https://github.com/servo/glfw?ref=cargo-3.0.4#765dace7e4125b87c764f5ac0e7a80eae5c550b2"
 
 [[package]]
 name = "khronos_api"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#df380704256f6eb9c9cf6850181bb7250995c50a"
+source = "git+https://github.com/bjz/gl-rs#79cd3b3f9f19aa0e39f6af572fc8673a6d9760bc"
 
 [[package]]
 name = "rust-xml"
 version = "0.1.0"
-source = "git+https://github.com/netvl/rust-xml#9d81f0e559db940f9444298d601279708c5a5b0b"
+source = "git+https://github.com/netvl/rust-xml#d6c57380a300b94f7e7881979dbe5459dbe4ca06"
 
 [[package]]
 name = "semver"

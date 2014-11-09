@@ -1,32 +1,32 @@
 extern crate "2dgl"as tdgl;
 
-use tdgl::data::vector::Vector2;
-use tdgl::game::gameloop::Renderable;
+use tdgl::data::vector2::coord_vector::Vector;
+use tdgl::game::gameloop::Render;
 use tdgl::graphics::renderer::Renderer;
 
 use object::{Position,Collision,Interactable};
 
 pub struct Wall {
-	pos      : Vector2<f32>,
-	dimension: Vector2<f32>,
+	pos      : Vector<f32>,
+	dimension: Vector<f32>,
 }
 
 impl Wall {
-	pub fn new(p : Vector2<f32>, d : Vector2<f32>) -> Wall {
+	pub fn new(p : Vector<f32>, d : Vector<f32>) -> Wall {
 		Wall {pos : p, dimension : d}
 	}
 }
 
 impl Position for Wall {
-	fn get_position(&self) -> Vector2<f32> { self.pos }
+	fn get_position(&self) -> Vector<f32> { self.pos }
 }
 
 impl Collision for Wall {
-	fn get_dimensions(&self) -> Vector2<f32> { self.dimension }
+	fn get_dimensions(&self) -> Vector<f32> { self.dimension }
 }
 
-impl Renderable for Wall {
-	fn render(&self, renderer : &Renderer) {
+impl Render<()> for Wall {
+	fn render(&self, renderer : &Renderer,_: &mut ()) {
 		renderer.render_rectangle(
 			self.get_position(),
 			self.get_dimensions(),

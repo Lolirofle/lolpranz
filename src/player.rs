@@ -1,13 +1,15 @@
 extern crate "2dgl"as tdgl;
 
-use tdgl::data::vector::Vector2;
-use tdgl::game::gameloop::{Updatable,Renderable,EventHandler};
+use tdgl::data::vector2::coord_vector::Vector;
+use tdgl::game::gameloop::{Update,Render,EventHandler};
 use tdgl::graphics::renderer::Renderer;
 use std::num::Zero;
+use std::time::Duration;
 
 use game::TdpgGame;
 use event;
 use object;
+use object::Position;
 
 pub const JUMP_VELOCITY : f32 = 6.0;
 pub const MOVE_MODIFIER : f32 = 0.3;
@@ -17,44 +19,42 @@ pub const MAX_Y_VELOCITY : f32 = 10.0;
 
 #[deriving(Clone)]
 pub struct Player{
-	position: Vector2<f32>,
-	velocity: Vector2<f32>,
+	position: Vector<f32>,
+	velocity: Vector<f32>,
 }
 impl Player{
 	pub fn new() -> Player{
 		return Player{
-			position: Vector2::new(0.0,0.0),
-			velocity: Vector2::new(0.0,0.0),
+			position: Vector{x: 0.0,y: 0.0},
+			velocity: Vector{x: 0.0,y: 0.0},
 		};
 	}
 }
 impl object::Position for Player{
-	fn get_position(&self) -> Vector2<f32>{
+	fn get_position(&self) -> Vector<f32>{
 		return self.position;
 	}
 }
-impl<'a> Updatable<TdpgGame<'a>> for Player{
-	fn update(&mut self,game: &TdpgGame,delta_time : f64){
+impl<'a> Update<&'a TdpgGame<'a>> for Player{
+	fn update(&mut self,game: &TdpgGame,delta_time : Duration){
 		self.position = self.position + self.velocity;
-		self.velocity = self.velocity + Vector2(0.0,GRAVITY);
-		let Vector2(_,pos_y) = self.position;
-		let Vector2(vel_x,_) = self.velocity;
-		if pos_y > 300.0 {
-			self.velocity = Vector2(vel_x,0.0)
+		self.velocity.y += GRAVITY;
+		if self.position.y > 300.0 {
+			self.velocity.y = 0.0;
 		}
 	}
 }
-impl Renderable for Player{
-	fn render(&self,renderer: &Renderer){
+impl Render<()> for Player{
+	fn render(&self,renderer: &Renderer,_: &mut ()){
 		renderer.render_rectangle(
 			self.get_position(),
-			Vector2(16.0 as f32,16.0)
+			Vector{x: 16.0 as f32,y: 16.0}
 		);
 	}
 }
 impl object::Collision for Player {
-	fn get_dimensions(&self) -> Vector2<f32> {
-		Vector2::new(16f32, 32f32)
+	fn get_dimensions(&self) -> Vector<f32> {
+		Vector{x: 16f32,y:  32f32}
 	}
 }
 impl object::Interactable for Player {}
@@ -62,7 +62,7 @@ impl EventHandler<event::Event> for Player{
 	fn event(&mut self,e: event::Event){
 		match e{
 			event::Jump => {
-				self.velocity = self.velocity-Vector2::new(0.0,JUMP_VELOCITY);
+				self.velocity = self.velocity-Vector{x: 0.0,y: JUMP_VELOCITY};
 			},
 			event::Move(v) => {
 				self.velocity = self.velocity + v * MOVE_MODIFIER;
