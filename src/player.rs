@@ -70,19 +70,21 @@ impl<'a> Update<&'a TdpgGame<'a>> for Player{
 		self.position = self.position + self.velocity;
 
 		//Collision checking
-		match self.collision_check(&game.wall){
-			Some(gap) => {
-				if gap.x>0.0 && gap.x<=gap.y{
-					self.position.x -= gap.x * self.velocity.x.signum();
-					self.velocity.x /= -2.0;
-				}
+		for obj in game.interactables.iter(){
+			match self.collision_check(*obj){
+				Some(gap) => {
+					if gap.x>0.0 && gap.x<=gap.y{
+						self.position.x -= gap.x * self.velocity.x.signum();
+						self.velocity.x /= -2.0;
+					}
 
-				if gap.y>0.0 && gap.y<=gap.x{
-					self.position.y -= gap.y * self.velocity.y.signum();
-					self.velocity.y /= -2.0;
-				}
-			},
-			None => {}
+					if gap.y>0.0 && gap.y<=gap.x{
+						self.position.y -= gap.y * self.velocity.y.signum();
+						self.velocity.y /= -2.0;
+					}
+				},
+				None => {}
+			}
 		}
 	}
 }

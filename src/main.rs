@@ -1,5 +1,6 @@
 #![feature(globs)]
 #![feature(tuple_indexing)]
+#![feature(unsafe_destructor)]
 
 extern crate core;
 extern crate collections;
