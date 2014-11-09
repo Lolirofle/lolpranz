@@ -15,8 +15,13 @@ use player;
 use wall;
 use dummyhandler;
 
+pub enum TdpgExit{
+	Close,
+	Restart,
+}
+
 pub struct TdpgGame<'a>{
-	should_exit: bool,
+	should_exit: Option<TdpgExit>,
 
 	objects       : Vec<*mut libc::types::common::c95::c_void>,
 	renderables   : Vec<&'a Render<()> + 'a>,
@@ -31,7 +36,7 @@ pub struct TdpgGame<'a>{
 impl<'a> TdpgGame<'a>{
 	pub fn init() -> TdpgGame<'a>{
 		let mut game = TdpgGame{
-			should_exit: false,
+			should_exit: None,
 
 			objects       : Vec::with_capacity(20u),
 			renderables   : Vec::with_capacity(20u),
@@ -68,6 +73,19 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
+			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
+			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
+			game.objects.push(object_ptr);
+			*object = wall::Wall::new(
+				Vector{x: 80.0 ,y: 200.0},
+				Vector{x: 16.0,y: 4.0 }
+			);
+
+			game.renderables.push(mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+			game.interactables.push(mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+		}
+
+		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<dummyhandler::DummyHandler>() as libc::size_t);
 			let object: &'a mut dummyhandler::DummyHandler = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
 			game.objects.push(object_ptr);
@@ -80,8 +98,8 @@ impl<'a> TdpgGame<'a>{
 	}
 }
 
-impl<'a> Game<glfw::WindowEvent,()> for TdpgGame<'a>{
-	fn should_exit(&self) -> bool{
+impl<'a> Game<glfw::WindowEvent,(),TdpgExit> for TdpgGame<'a>{
+	fn should_exit(&self) -> Option<TdpgExit>{
 		self.should_exit
 	}
 
@@ -118,7 +136,11 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 	fn event(&mut self,event: glfw::WindowEvent){
 		match match event{
 			glfw::KeyEvent(glfw::KeyEscape,_,glfw::Press,_) => {
-				self.should_exit = true;
+				self.should_exit = Some(TdpgExit::Close);
+				None
+			},
+			glfw::KeyEvent(glfw::KeyR,_,glfw::Press,_) => {
+				self.should_exit = Some(TdpgExit::Restart);
 				None
 			},
 			glfw::KeyEvent(glfw::KeySpace,_,glfw::Press,_) |
@@ -143,15 +165,8 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 #[unsafe_destructor]
 impl<'a> Drop for TdpgGame<'a>{
 	fn drop(&mut self){
-		self.updatables.clear();//TODO: Necessary to clear?
-		self.renderables.clear();
-		self.event_handlers.clear();
-		self.interactables.clear();
-
 		for &object in self.objects.iter_mut(){unsafe{
 			libc::funcs::c95::stdlib::free(mem::transmute(object));
 		}}
-		self.objects.clear();
-
 	}
 }

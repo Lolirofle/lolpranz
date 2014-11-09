@@ -1,5 +1,6 @@
 extern crate "2dgl"as tdgl;
 
+use core::num::Zero;
 use tdgl::data::vector2::Vector as VectorTrait;
 use tdgl::data::vector2::coord_vector::Vector;
 use tdgl::game::gameloop::{Update,Render,EventHandler};
@@ -64,6 +65,8 @@ impl<'a> Update<&'a TdpgGame<'a>> for Player{
 		let friction = self.velocity.unit()/16.0;
 		if friction.magnitude() < self.velocity.magnitude(){
 			self.velocity = self.velocity - friction;//.limit_magnitude(game.max_velocity);
+		}else{
+			self.velocity = Zero::zero();
 		}
 
 		//Velocity affecting position

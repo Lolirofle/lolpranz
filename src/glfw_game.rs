@@ -7,14 +7,18 @@ use glfw;
 use glfw::{Context,Window};
 use std::time::Duration;
 
-pub struct GlfwGame<'g>{
+pub struct GlfwGame<'g,Exit,G>
+	where G: Game<glfw::WindowEvent,(),Exit> + 'g
+{
 	glfw: glfw::Glfw,
 	pub window: (glfw::Window,Receiver<(f64,glfw::WindowEvent)>),
-	game: &'g mut Game<glfw::WindowEvent,()>+'g,
+	game: G,
 }
 
-impl<'g> GlfwGame<'g>{
-	pub fn using_game<G: Game<glfw::WindowEvent,()>>(game: &'g mut G) -> GlfwGame<'g>{
+impl<'g,Exit,G> GlfwGame<'g,Exit,G>
+	where G: Game<glfw::WindowEvent,(),Exit> + 'g
+{
+	pub fn using_game(game: G) -> GlfwGame<'g,Exit,G>{
 		let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 		let window = glfw.create_window(640,480,"GLTest",glfw::Windowed).expect("Failed to create GLFW window.");
 
@@ -24,14 +28,22 @@ impl<'g> GlfwGame<'g>{
 			game: game,
 		}
 	}
+
+	pub fn use_game(&mut self,game: G){
+		self.game = game;
+	}
 }
 
-impl<'g> Game<(),()> for GlfwGame<'g>{
-	fn should_exit(&self) -> bool{
-		if self.game.should_exit(){
+impl<'g,Exit,G> Game<(),(),Exit> for GlfwGame<'g,Exit,G>
+	where G: Game<glfw::WindowEvent,(),Exit> + 'g
+{
+	fn should_exit(&self) -> Option<Exit>{
+		let exit = self.game.should_exit();
+		if let Some(_) = exit{
 			self.window.0.set_should_close(true);
 		}
-		return self.window.0.should_close();
+		return exit;
+		//return self.window.0.should_close();//TODO: Game won't exit when window requests exit
 	}
 
 	fn target_time_per_frame(&self) -> Duration{
@@ -42,9 +54,9 @@ impl<'g> Game<(),()> for GlfwGame<'g>{
 		self.glfw.make_context_current(Some(&self.window.0));
 		
 		//Window
-		/*glfw.window_hint(glfw::ContextVersion(3,2));
-		glfw.window_hint(glfw::OpenglForwardCompat(true));
-		glfw.window_hint(glfw::OpenglProfile(glfw::OpenGlCoreProfile));*/
+		//self.glfw.window_hint(glfw::ContextVersion(3,2));
+		//self.glfw.window_hint(glfw::OpenglForwardCompat(true));
+		//self.glfw.window_hint(glfw::OpenglProfile(glfw::OpenGlCoreProfile));
 
 		//Initialize window
 		self.window.0.set_key_polling(true);
@@ -57,20 +69,26 @@ impl<'g> Game<(),()> for GlfwGame<'g>{
 	}
 }
 
-impl<'g> gameloop::Update<()> for GlfwGame<'g>{
+impl<'g,Exit,G> gameloop::Update<()> for GlfwGame<'g,Exit,G>
+	where G: Game<glfw::WindowEvent,(),Exit> + 'g
+{
 	fn update(&mut self,_: (),delta_time: Duration){
 		self.game.update((),delta_time);
 	}
 }
 
-impl<'g> gameloop::Render<()> for GlfwGame<'g>{
+impl<'g,Exit,G> gameloop::Render<()> for GlfwGame<'g,Exit,G>
+	where G: Game<glfw::WindowEvent,(),Exit> + 'g
+{
 	fn render(&self,renderer: &Renderer,_: &mut ()){
 		self.game.render(renderer,&mut ());
 		self.window.0.swap_buffers();
 	}
 }
 
-impl<'g> gameloop::EventHandler<()> for GlfwGame<'g>{
+impl<'g,Exit,G> gameloop::EventHandler<()> for GlfwGame<'g,Exit,G>
+	where G: Game<glfw::WindowEvent,(),Exit> + 'g
+{
 	fn event(&mut self,_: ()){
 		self.glfw.poll_events();
 
