@@ -44,8 +44,9 @@ impl<'a> TdpgGame<'a>{
 		};
 
 		unsafe{
-			let object: &'a mut player::Player = (libc::malloc(mem::size_of::<player::Player>() as libc::size_t) as *mut player::Player).as_mut().unwrap();
-			game.objects.push(mem::transmute_copy(&object));
+			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
+			let object: &'a mut player::Player = (object_ptr as *mut player::Player).as_mut().unwrap();
+			game.objects.push(object_ptr);
 			*object = player::Player::new();
 
 			game.renderables.push(mem::transmute_copy::<_,&'a mut player::Player>(&object));
@@ -54,8 +55,9 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object: &'a mut wall::Wall = (libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t) as *mut wall::Wall).as_mut().unwrap();
-			game.objects.push(mem::transmute_copy(&object));
+			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
+			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
+			game.objects.push(object_ptr);
 			*object = wall::Wall::new(
 				Vector{x: 50.0 ,y: 240.0},
 				Vector{x: 320.0,y: 16.0 }
@@ -66,8 +68,9 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object: &'a mut dummyhandler::DummyHandler = (libc::malloc(mem::size_of::<dummyhandler::DummyHandler>() as libc::size_t) as *mut dummyhandler::DummyHandler).as_mut().unwrap();
-			game.objects.push(mem::transmute_copy(&object));
+			let object_ptr = libc::malloc(mem::size_of::<dummyhandler::DummyHandler>() as libc::size_t);
+			let object: &'a mut dummyhandler::DummyHandler = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
+			game.objects.push(object_ptr);
 			*object = dummyhandler::DummyHandler;
 
 			game.event_handlers.push(mem::transmute_copy::<_,&'a mut dummyhandler::DummyHandler>(&object));
@@ -140,13 +143,15 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 #[unsafe_destructor]
 impl<'a> Drop for TdpgGame<'a>{
 	fn drop(&mut self){
-		self.updatables.clear();
+		self.updatables.clear();//TODO: Necessary to clear?
 		self.renderables.clear();
 		self.event_handlers.clear();
 		self.interactables.clear();
 
-		for object in self.objects.iter_mut(){unsafe{
+		for &object in self.objects.iter_mut(){unsafe{
 			libc::funcs::c95::stdlib::free(mem::transmute(object));
 		}}
+		self.objects.clear();
+
 	}
 }

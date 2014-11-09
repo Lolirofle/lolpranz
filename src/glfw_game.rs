@@ -11,27 +11,27 @@ pub struct GlfwGame<'g>{
 	glfw: glfw::Glfw,
 	pub window: (glfw::Window,Receiver<(f64,glfw::WindowEvent)>),
 	game: &'g mut Game<glfw::WindowEvent,()>+'g,
-	render_context: glfw::RenderContext,
 }
 
 impl<'g> GlfwGame<'g>{
 	pub fn using_game<G: Game<glfw::WindowEvent,()>>(game: &'g mut G) -> GlfwGame<'g>{
 		let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
-		let mut window = glfw.create_window(640,480,"GLTest",glfw::Windowed).expect("Failed to create GLFW window.");
-		let render_context = window.0.render_context();
+		let window = glfw.create_window(640,480,"GLTest",glfw::Windowed).expect("Failed to create GLFW window.");
 
 		GlfwGame{
 			glfw: glfw,
 			window: window,
 			game: game,
-			render_context: render_context,
 		}
 	}
 }
 
 impl<'g> Game<(),()> for GlfwGame<'g>{
 	fn should_exit(&self) -> bool{
-		self.game.should_exit() || self.window.0.should_close()
+		if self.game.should_exit(){
+			self.window.0.set_should_close(true);
+		}
+		return self.window.0.should_close();
 	}
 
 	fn target_time_per_frame(&self) -> Duration{
@@ -39,7 +39,7 @@ impl<'g> Game<(),()> for GlfwGame<'g>{
 	}
 
 	fn init_render(&self,renderer: &Renderer) -> (){
-		self.render_context.make_current();
+		self.glfw.make_context_current(Some(&self.window.0));
 		
 		//Window
 		/*glfw.window_hint(glfw::ContextVersion(3,2));
@@ -47,7 +47,6 @@ impl<'g> Game<(),()> for GlfwGame<'g>{
 		glfw.window_hint(glfw::OpenglProfile(glfw::OpenGlCoreProfile));*/
 
 		//Initialize window
-		//self.window.0.set_all_polling(true);
 		self.window.0.set_key_polling(true);
 		self.window.0.make_current();
 		self.glfw.set_swap_interval(0);
@@ -67,7 +66,7 @@ impl<'g> gameloop::Update<()> for GlfwGame<'g>{
 impl<'g> gameloop::Render<()> for GlfwGame<'g>{
 	fn render(&self,renderer: &Renderer,_: &mut ()){
 		self.game.render(renderer,&mut ());
-		self.render_context.swap_buffers();
+		self.window.0.swap_buffers();
 	}
 }
 
