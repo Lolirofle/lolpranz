@@ -34,16 +34,19 @@ impl<'g,Exit,G> GlfwGame<'g,Exit,G>
 	}
 }
 
-impl<'g,Exit,G> Game<(),(),Exit> for GlfwGame<'g,Exit,G>
+impl<'g,Exit,G> Game<(),(),Option<Exit>> for GlfwGame<'g,Exit,G>
 	where G: Game<glfw::WindowEvent,(),Exit> + 'g
 {
-	fn should_exit(&self) -> Option<Exit>{
+	fn should_exit(&self) -> Option<Option<Exit>>{
 		let exit = self.game.should_exit();
 		if let Some(_) = exit{
 			self.window.0.set_should_close(true);
+			return Some(exit);
 		}
-		return exit;
-		//return self.window.0.should_close();//TODO: Game won't exit when window requests exit
+		if self.window.0.should_close(){
+			return Some(None);
+		}
+		return None;
 	}
 
 	fn target_time_per_frame(&self) -> Duration{

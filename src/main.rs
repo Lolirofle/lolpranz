@@ -2,7 +2,6 @@
 #![feature(tuple_indexing)]
 #![feature(unsafe_destructor)]
 #![feature(if_let)]
-#![feature(while_let)]
 
 extern crate core;
 extern crate collections;
@@ -28,10 +27,13 @@ fn main(){
 
 	loop{
 		match game_handler.run(Renderer::new(|s| game.window.0.get_proc_address(s)),&mut game){
-			TdpgExit::Close   => break,
-			TdpgExit::Restart => {
-				game.use_game(TdpgGame::init());
+			Some(exit_data) => match exit_data{
+				TdpgExit::Close   => break,
+				TdpgExit::Restart => {
+					game.use_game(TdpgGame::init());
+				},
 			},
+			None => break
 		};
 	}
 }

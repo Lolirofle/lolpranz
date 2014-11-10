@@ -24,7 +24,7 @@ pub struct TdpgGame<'a>{
 	should_exit: Option<TdpgExit>,
 
 	objects       : Vec<*mut libc::types::common::c95::c_void>,
-	renderables   : Vec<&'a Render<()> + 'a>,
+	renderables   : Vec<&'a Render<()> + 'a>,//TODO: Layer/depth using BTreeMap<u8,Vec<&'a Render<()> + 'a>>,
 	updatables    : Vec<&'a mut Update<&'a TdpgGame<'a>> + 'a>,
 	event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
 	pub interactables : Vec<&'a mut Interact + 'a>,
