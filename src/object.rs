@@ -16,6 +16,8 @@ pub trait Dimension {
 }
 
 pub trait Interact : Dimension+Position {
+	//fn collide(&mut self,other: &Interact);
+
 	fn has_point(&self, v: Vector<f32>) -> bool {
 		let min = self.get_position();
 		let max = min + self.get_dimensions();
@@ -51,4 +53,8 @@ pub trait Interact : Dimension+Position {
 			None
 		}
 	}
+}
+
+pub trait Destroyed{//TODO: Destroy based on object id. When an object reports that it is destroyed, the game should take care of the garbage by filtering the object in question from the lists
+	fn destroyed() -> bool;
 }

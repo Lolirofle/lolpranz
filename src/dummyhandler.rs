@@ -8,11 +8,8 @@ pub struct DummyHandler;
 
 impl EventHandler<event::Event> for DummyHandler {
 	fn event(&mut self, e: event::Event){
-		match e {
-			event::Jump => {
-				println!("I said jump!")
-			}
-			_ => {}
+		if let event::Player(player_id,event::Jump) = e{
+			println!("I said jump, {}!",player_id)
 		}
 	}
 }

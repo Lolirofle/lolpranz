@@ -27,13 +27,10 @@ fn main(){
 
 	loop{
 		match game_handler.run(Renderer::new(|s| game.window.0.get_proc_address(s)),&mut game){
-			Some(exit_data) => match exit_data{
-				TdpgExit::Close   => break,
-				TdpgExit::Restart => {
-					game.use_game(TdpgGame::init());
-				},
+			TdpgExit::Close   => break,
+			TdpgExit::Restart => {
+				game.use_game(TdpgGame::init());
 			},
-			None => break
 		};
 	}
 }

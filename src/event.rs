@@ -1,7 +1,13 @@
 extern crate "2dgl"as tdgl;
 
-pub enum Event{
-	Move(f32),//0.0 <= modifier <= 1.0
+pub enum PlayerEvent{
+	///(multiplier) where -1.0 <= multiplier <= 1.0
+	Move(f32),
 	Jump,
 	Action,
+}
+
+pub enum Event{
+	///(player id,player event)
+	Player(u8,PlayerEvent)
 }

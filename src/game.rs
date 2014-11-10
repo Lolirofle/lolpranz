@@ -55,7 +55,21 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
 			let object: &'a mut player::Player = (object_ptr as *mut player::Player).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
-			*object = player::Player::new();
+			*object = player::Player::new(0,Vector{x: 60.0,y: 0.0});
+
+			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+			game.event_handlers.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+
+			game.object_last_id+=1;
+		}
+
+		unsafe{
+			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
+			let object: &'a mut player::Player = (object_ptr as *mut player::Player).as_mut().unwrap();
+			game.objects.insert(game.object_last_id,object_ptr);
+			*object = player::Player::new(1,Vector{x: 100.0,y: 0.0});
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
@@ -147,7 +161,8 @@ impl<'a> Render<()> for TdpgGame<'a>{
 impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 	fn event(&mut self,event: glfw::WindowEvent){
 		match match event{
-			glfw::KeyEvent(glfw::KeyEscape,_,glfw::Press,_) => {
+			glfw::KeyEvent(glfw::KeyEscape,_,glfw::Press,_) |
+			glfw::CloseEvent => {
 				self.should_exit = Some(TdpgExit::Close);
 				None
 			},
@@ -156,12 +171,17 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 				None
 			},
 			glfw::KeyEvent(glfw::KeySpace,_,glfw::Press,_) |
-			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_)  => Some(event::Jump),
-			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(event::Move(-1.0)),
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(event::Move( 1.0)),
-			
+			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_)  => Some(event::Player(0,event::Jump)),
+			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(event::Player(0,event::Move(-1.0))),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(event::Player(0,event::Move(1.0))),
 			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Release,_) |
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::Move(0.0)),
+			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::Player(0,event::Move(0.0))),
+
+			glfw::KeyEvent(glfw::KeyW   ,_,glfw::Press,_)  => Some(event::Player(1,event::Jump)),
+			glfw::KeyEvent(glfw::KeyA ,_,glfw::Press,_)  => Some(event::Player(1,event::Move(-1.0))),
+			glfw::KeyEvent(glfw::KeyD,_,glfw::Press,_)  => Some(event::Player(1,event::Move(1.0))),
+			glfw::KeyEvent(glfw::KeyA ,_,glfw::Release,_) |
+			glfw::KeyEvent(glfw::KeyD,_,glfw::Release,_) => Some(event::Player(1,event::Move(0.0))),
 			_ => None
 		}{
 			Some(e) => {

@@ -15,6 +15,8 @@ pub const MOVE_VELOCITY : f32 = 1.5;
 
 #[deriving(Clone)]
 pub struct Player{
+	player_id: u8,
+
 	position: Vector<f32>,
 	velocity: Vector<f32>,
 
@@ -26,9 +28,11 @@ pub struct Player{
 	move_velocity: f32,
 }
 impl Player{
-	pub fn new() -> Player{
+	pub fn new(player_id: u8,position: Vector<f32>) -> Player{
 		return Player{
-			position: Vector{x: 0.0,y: 0.0},
+			player_id: player_id,
+
+			position: position,
 			velocity: Vector{x: 0.0,y: 0.0},
 
 			jump_velocity: 6.0,
@@ -114,13 +118,16 @@ impl Interact for Player {}
 impl EventHandler<event::Event> for Player{
 	fn event(&mut self,e: event::Event){
 		match e{
-			event::Jump => {
-				self.velocity.y -= self.jump_velocity;
-			},
-			event::Move(vel_x) => {
-				self.move_velocity = vel_x*MOVE_VELOCITY;
-			},
-			_ => {}
+			event::Player(player_id,pe) => if self.player_id == player_id{match pe{
+				event::Jump => {
+					self.velocity.y -= self.jump_velocity;
+				},
+				event::Move(vel_x) => {
+					self.move_velocity = vel_x*MOVE_VELOCITY;
+				},
+				_ => {}
+			}},
+			//_=> {}
 		}
 	}
 }

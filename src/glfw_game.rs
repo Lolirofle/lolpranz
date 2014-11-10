@@ -34,17 +34,13 @@ impl<'g,Exit,G> GlfwGame<'g,Exit,G>
 	}
 }
 
-impl<'g,Exit,G> Game<(),(),Option<Exit>> for GlfwGame<'g,Exit,G>
+impl<'g,Exit,G> Game<(),(),Exit> for GlfwGame<'g,Exit,G>
 	where G: Game<glfw::WindowEvent,(),Exit> + 'g
 {
-	fn should_exit(&self) -> Option<Option<Exit>>{
-		let exit = self.game.should_exit();
-		if let Some(_) = exit{
+	fn should_exit(&self) -> Option<Exit>{
+		if let Some(exit) = self.game.should_exit(){
 			self.window.0.set_should_close(true);
 			return Some(exit);
-		}
-		if self.window.0.should_close(){
-			return Some(None);
 		}
 		return None;
 	}
@@ -62,7 +58,7 @@ impl<'g,Exit,G> Game<(),(),Option<Exit>> for GlfwGame<'g,Exit,G>
 		//self.glfw.window_hint(glfw::OpenglProfile(glfw::OpenGlCoreProfile));
 
 		//Initialize window
-		self.window.0.set_key_polling(true);
+		self.window.0.set_all_polling(true);
 		self.window.0.make_current();
 		self.glfw.set_swap_interval(0);
 		
