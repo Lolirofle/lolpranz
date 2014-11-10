@@ -1,6 +1,7 @@
 extern crate "2dgl"as tdgl;
 extern crate libc;
 
+use std::collections::hash_map::HashMap;
 use core::mem;
 use tdgl::data::vector2::coord_vector::Vector;
 use tdgl::game::gameloop::{Update,Render,EventHandler};
@@ -23,11 +24,12 @@ pub enum TdpgExit{
 pub struct TdpgGame<'a>{
 	should_exit: Option<TdpgExit>,
 
-	objects       : Vec<*mut libc::types::common::c95::c_void>,
-	renderables   : Vec<&'a Render<()> + 'a>,//TODO: Layer/depth using BTreeMap<u8,Vec<&'a Render<()> + 'a>>,
-	updatables    : Vec<&'a mut Update<&'a TdpgGame<'a>> + 'a>,
-	event_handlers: Vec<&'a mut EventHandler<event::Event> + 'a>,
-	pub interactables : Vec<&'a mut Interact + 'a>,
+	object_last_id: u32,
+	objects       : HashMap<u32,*mut libc::types::common::c95::c_void>,
+	renderables   : HashMap<u32,&'a Render<()> + 'a>,//TODO: Layer/depth/render order using BTreeMap<u8,HashMap<u32,&'a Render<()> + 'a>>,
+	updatables    : HashMap<u32,&'a mut Update<(u32,&'a TdpgGame<'a>)> + 'a>,
+	event_handlers: HashMap<u32,&'a mut EventHandler<event::Event> + 'a>,
+	pub interactables : HashMap<u32,&'a mut Interact + 'a>,
 
 	pub gravity: f32,
 	pub max_velocity: f32,
@@ -38,11 +40,12 @@ impl<'a> TdpgGame<'a>{
 		let mut game = TdpgGame{
 			should_exit: None,
 
-			objects       : Vec::with_capacity(20u),
-			renderables   : Vec::with_capacity(20u),
-			updatables    : Vec::with_capacity(20u),
-			event_handlers: Vec::with_capacity(20u),
-			interactables : Vec::with_capacity(20u),
+			object_last_id: 1,
+			objects       : HashMap::new(),
+			renderables   : HashMap::new(),
+			updatables    : HashMap::new(),
+			event_handlers: HashMap::new(),
+			interactables : HashMap::new(),
 
 			gravity       : 0.2,
 			max_velocity  : 8.0,
@@ -51,47 +54,56 @@ impl<'a> TdpgGame<'a>{
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
 			let object: &'a mut player::Player = (object_ptr as *mut player::Player).as_mut().unwrap();
-			game.objects.push(object_ptr);
+			game.objects.insert(game.object_last_id,object_ptr);
 			*object = player::Player::new();
 
-			game.renderables.push(mem::transmute_copy::<_,&'a mut player::Player>(&object));
-			game.updatables.push(mem::transmute_copy::<_,&'a mut player::Player>(&object));
-			game.event_handlers.push(mem::transmute_copy::<_,&'a mut player::Player>(&object));
+			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+			game.event_handlers.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+
+			game.object_last_id+=1;
 		}
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
 			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
-			game.objects.push(object_ptr);
+			game.objects.insert(game.object_last_id,object_ptr);
 			*object = wall::Wall::new(
 				Vector{x: 50.0 ,y: 240.0},
 				Vector{x: 320.0,y: 16.0 }
 			);
 
-			game.renderables.push(mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
-			game.interactables.push(mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+		
+			game.object_last_id+=1;
 		}
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
 			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
-			game.objects.push(object_ptr);
+			game.objects.insert(game.object_last_id,object_ptr);
 			*object = wall::Wall::new(
 				Vector{x: 80.0 ,y: 200.0},
 				Vector{x: 16.0,y: 4.0 }
 			);
 
-			game.renderables.push(mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
-			game.interactables.push(mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+		
+			game.object_last_id+=1;
 		}
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<dummyhandler::DummyHandler>() as libc::size_t);
 			let object: &'a mut dummyhandler::DummyHandler = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
-			game.objects.push(object_ptr);
+			game.objects.insert(game.object_last_id,object_ptr);
 			*object = dummyhandler::DummyHandler;
 
-			game.event_handlers.push(mem::transmute_copy::<_,&'a mut dummyhandler::DummyHandler>(&object));
+			game.event_handlers.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut dummyhandler::DummyHandler>(&object));
+		
+			game.object_last_id+=1;
 		}
 		
 		return game;
@@ -115,8 +127,8 @@ impl<'a> Update<()> for TdpgGame<'a>{
 		unsafe{//TODO: How to fix efficiently
 			let self2 = mem::transmute(&*self);
 
-			for updatable in self.updatables.iter_mut(){
-				updatable.update(self2,delta_time);
+			for (&id,updatable) in self.updatables.iter_mut(){
+				updatable.update((id,self2),delta_time);
 			}
 		}
 	}
@@ -126,7 +138,7 @@ impl<'a> Render<()> for TdpgGame<'a>{
 	fn render(&self,renderer: &Renderer,_: &mut ()){
 		renderer.clear();
 
-		for renderable in self.renderables.iter(){
+		for (_,renderable) in self.renderables.iter(){
 			renderable.render(renderer,&mut ());
 		}
 	}
@@ -153,7 +165,7 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 			_ => None
 		}{
 			Some(e) => {
-				for handler in self.event_handlers.iter_mut(){
+				for (_,handler) in self.event_handlers.iter_mut(){
 					handler.event(e);
 				}
 			},
@@ -165,7 +177,7 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 #[unsafe_destructor]
 impl<'a> Drop for TdpgGame<'a>{
 	fn drop(&mut self){
-		for &object in self.objects.iter_mut(){unsafe{
+		for (_,&object) in self.objects.iter_mut(){unsafe{
 			libc::funcs::c95::stdlib::free(mem::transmute(object));
 		}}
 	}

@@ -47,8 +47,8 @@ impl Velocity for Player{
 		return self.velocity;
 	}
 }
-impl<'a> Update<&'a TdpgGame<'a>> for Player{
-	fn update(&mut self,game: &TdpgGame,_ : Duration){
+impl<'a> Update<(u32,&'a TdpgGame<'a>)> for Player{
+	fn update(&mut self,(id,game): (u32,&TdpgGame),_ : Duration){
 		//TODO: Optimize everything, including finding better methods for doing these things. At least it's working now
 
 		//Gravity affecting velocity
@@ -73,20 +73,22 @@ impl<'a> Update<&'a TdpgGame<'a>> for Player{
 		self.position = self.position + self.velocity;
 
 		//Collision checking
-		for obj in game.interactables.iter(){
-			match self.collision_check(*obj){
-				Some(gap) => {
-					if gap.x>0.0 && gap.x<=gap.y{
-						self.position.x -= gap.x * self.velocity.x.signum();
-						self.velocity.x /= -2.0;
-					}
+		for (&obj_id,obj) in game.interactables.iter(){
+			if id != obj_id{
+				match self.collision_check(*obj){
+					Some(gap) => {
+						if gap.x>0.0 && gap.x<=gap.y{
+							self.position.x -= gap.x * self.velocity.x.signum();
+							self.velocity.x /= -2.0;
+						}
 
-					if gap.y>0.0 && gap.y<=gap.x{
-						self.position.y -= gap.y * self.velocity.y.signum();
-						self.velocity.y /= -2.0;
-					}
-				},
-				None => {}
+						if gap.y>0.0 && gap.y<=gap.x{
+							self.position.y -= gap.y * self.velocity.y.signum();
+							self.velocity.y /= -2.0;
+						}
+					},
+					None => {}
+				}
 			}
 		}
 	}
