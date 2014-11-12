@@ -11,6 +11,8 @@ use glfw;
 use std::time::Duration;
 
 use event;
+use item;
+use jump_through;
 use object::Interact;
 use player;
 use wall;
@@ -83,10 +85,10 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
 			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
-			*object = wall::Wall::new(
-				Vector{x: 50.0 ,y: 240.0},
-				Vector{x: 320.0,y: 16.0 }
-			);
+			*object = wall::Wall{
+				pos: Vector{x: 50.0 ,y: 240.0},
+				dim: Vector{x: 320.0,y: 16.0 }
+			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
@@ -98,13 +100,43 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
 			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
-			*object = wall::Wall::new(
-				Vector{x: 80.0 ,y: 200.0},
-				Vector{x: 16.0,y: 4.0 }
-			);
+			*object = wall::Wall{
+				pos: Vector{x: 80.0 ,y: 200.0},
+				dim: Vector{x: 16.0,y: 4.0 }
+			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
+		
+			game.object_last_id+=1;
+		}
+
+		unsafe{
+			let object_ptr = libc::malloc(mem::size_of::<jump_through::JumpThrough>() as libc::size_t);
+			let object: &'a mut jump_through::JumpThrough = (object_ptr as *mut jump_through::JumpThrough).as_mut().unwrap();
+			game.objects.insert(game.object_last_id,object_ptr);
+			*object = jump_through::JumpThrough{
+				pos: Vector{x: 112.0 ,y: 200.0},
+				dim: Vector{x: 16.0,y: 4.0 }
+			};
+
+			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut jump_through::JumpThrough>(&object));
+			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut jump_through::JumpThrough>(&object));
+		
+			game.object_last_id+=1;
+		}
+
+		unsafe{
+			let object_ptr = libc::malloc(mem::size_of::<item::Item>() as libc::size_t);
+			let object: &'a mut item::Item = (object_ptr as *mut item::Item).as_mut().unwrap();
+			game.objects.insert(game.object_last_id,object_ptr);
+			*object = item::Item{
+				pos: Vector{x: 160.0 ,y: 220.0},
+				dim: Vector{x: 8.0,y: 8.0 }
+			};
+
+			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut item::Item>(&object));
+			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut item::Item>(&object));
 		
 			game.object_last_id+=1;
 		}

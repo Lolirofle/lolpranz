@@ -1,5 +1,6 @@
 extern crate "2dgl"as tdgl;
 
+use std::num::Zero;
 use tdgl::data::vector2::coord_vector::Vector;
 
 pub trait Position {
@@ -15,8 +16,8 @@ pub trait Dimension {
 	fn get_dimensions(&self) -> Vector<f32>;
 }
 
-pub trait Interact : Dimension+Position {
-	//fn collide(&mut self,other: &Interact);
+pub trait Interact: Dimension + Position{
+	fn is_solid(&self,other: &Interact) -> bool;
 
 	fn has_point(&self, v: Vector<f32>) -> bool {
 		let min = self.get_position();

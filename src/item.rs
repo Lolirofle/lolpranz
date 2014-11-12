@@ -6,20 +6,20 @@ use tdgl::graphics::renderer::Renderer;
 
 use object::{Position,Dimension,Interact};
 
-pub struct Wall{
+pub struct Item{
 	pub pos: Vector<f32>,
 	pub dim: Vector<f32>,
 }
 
-impl Position for Wall {
+impl Position for Item {
 	fn get_position(&self) -> Vector<f32> { self.pos }
 }
 
-impl Dimension for Wall {
+impl Dimension for Item {
 	fn get_dimensions(&self) -> Vector<f32> { self.dim }
 }
 
-impl Render<()> for Wall {
+impl Render<()> for Item {
 	fn render(&self, renderer : &Renderer,_: &mut ()) {
 		renderer.render_rectangle(
 			self.get_position(),
@@ -28,6 +28,6 @@ impl Render<()> for Wall {
 	}
 }
 
-impl Interact for Wall{
-	fn is_solid(&self,other: &Interact) -> bool{true}
+impl Interact for Item{
+	fn is_solid(&self,other: &Interact) -> bool{false}
 }

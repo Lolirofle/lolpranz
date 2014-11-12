@@ -17,6 +17,8 @@ mod dummyhandler;
 mod event;
 mod game;
 mod glfw_game;
+mod item;
+mod jump_through;
 mod object;
 mod player;
 mod wall;

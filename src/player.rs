@@ -78,7 +78,7 @@ impl<'a> Update<(u32,&'a TdpgGame<'a>)> for Player{
 
 		//Collision checking
 		for (&obj_id,obj) in game.interactables.iter(){
-			if id != obj_id{
+			if id != obj_id && obj.is_solid(self){
 				match self.collision_check(*obj){
 					Some(gap) => {
 						if gap.x>0.0 && gap.x<=gap.y{
@@ -113,14 +113,16 @@ impl Render<()> for Player{
 	}
 }
 
-impl Interact for Player {}
+impl Interact for Player{
+	fn is_solid(&self,other: &Interact) -> bool{true}
+}
 
 impl EventHandler<event::Event> for Player{
-	fn event(&mut self,e: event::Event){
+	fn event(&mut self,e: event::Event){//TODO: Event system with `comm::channel()`?
 		match e{
 			event::Player(player_id,pe) => if self.player_id == player_id{match pe{
 				event::Jump => {
-					self.velocity.y -= self.jump_velocity;
+					self.velocity.y -= self.jump_velocity;//TODO: `should_jump` because of collision checking for if standing on something
 				},
 				event::Move(vel_x) => {
 					self.move_velocity = vel_x*MOVE_VELOCITY;

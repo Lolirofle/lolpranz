@@ -6,20 +6,20 @@ use tdgl::graphics::renderer::Renderer;
 
 use object::{Position,Dimension,Interact};
 
-pub struct Wall{
+pub struct JumpThrough {
 	pub pos: Vector<f32>,
 	pub dim: Vector<f32>,
 }
 
-impl Position for Wall {
+impl Position for JumpThrough {
 	fn get_position(&self) -> Vector<f32> { self.pos }
 }
 
-impl Dimension for Wall {
+impl Dimension for JumpThrough {
 	fn get_dimensions(&self) -> Vector<f32> { self.dim }
 }
 
-impl Render<()> for Wall {
+impl Render<()> for JumpThrough {
 	fn render(&self, renderer : &Renderer,_: &mut ()) {
 		renderer.render_rectangle(
 			self.get_position(),
@@ -28,6 +28,8 @@ impl Render<()> for Wall {
 	}
 }
 
-impl Interact for Wall{
-	fn is_solid(&self,other: &Interact) -> bool{true}
+impl Interact for JumpThrough{
+	fn is_solid(&self,other: &Interact) -> bool{
+		self.pos.y > other.get_position().y + other.get_dimensions().y//TODO: Check for velocity too?
+	}
 }
