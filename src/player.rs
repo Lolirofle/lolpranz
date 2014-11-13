@@ -15,6 +15,7 @@ pub const MOVE_VELOCITY : f32 = 1.5;
 
 pub struct Player{
 	player_id: u8,
+	event_receiver: Receiver<event::Event>,
 
 	position: Vector<f32>,
 	velocity: Vector<f32>,
@@ -25,8 +26,6 @@ pub struct Player{
 
 	//States
 	move_velocity: f32,
-	
-	event_receiver: Receiver<event::Event>,
 }
 impl Player{
 	pub fn new(player_id: u8,position: Vector<f32>) -> (Player,Sender<event::Event>){

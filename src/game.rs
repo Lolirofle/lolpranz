@@ -1,5 +1,5 @@
 extern crate "2dgl"as tdgl;
-extern crate libc;
+extern crate alloc;
 
 use std::collections::hash_map::HashMap;
 use core::mem;
@@ -27,7 +27,7 @@ pub struct TdpgGame<'a>{
 	should_exit: Option<TdpgExit>,
 
 	object_last_id: u32,
-	objects       : HashMap<u32,*mut libc::types::common::c95::c_void>,
+	objects       : HashMap<u32,(*mut u8,uint,uint)>,
 	renderables   : HashMap<u32,&'a Render<()> + 'a>,//TODO: Layer/depth/render order using BTreeMap<u8,HashMap<u32,&'a Render<()> + 'a>>,
 	updatables    : HashMap<u32,&'a mut Update<(u32,&'a TdpgGame<'a>)> + 'a>,
 	event_handlers: HashMap<u32,Sender<event::Event>>,
@@ -53,12 +53,13 @@ impl<'a> TdpgGame<'a>{
 			max_velocity  : 8.0,
 		};
 
-		//TODO: Can we use std::cell::UnsafeCell?
+		//TODO: Look into std::cell::UnsafeCell (replace some of the code?)
 		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
-			let object: &'a mut player::Player = (object_ptr as *mut player::Player).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
+			let (size,align) = (mem::size_of::<player::Player>(),mem::align_of::<player::Player>());
+			let object_ptr = alloc::heap::allocate(size,align);
+			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
+			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
 			let (o,transmitter) = player::Player::new(0,Vector{x: 60.0,y: 0.0});
 			*object = o;
 			game.event_handlers.insert(game.object_last_id,transmitter);
@@ -71,10 +72,11 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
-			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
+			let (size,align) = (mem::size_of::<player::Player>(),mem::align_of::<player::Player>());
+			let object_ptr = alloc::heap::allocate(size,align);
+			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
+			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
 			let (o,transmitter) = player::Player::new(1,Vector{x: 100.0,y: 0.0});
 			*object = o;
 			game.event_handlers.insert(game.object_last_id,transmitter);
@@ -87,10 +89,11 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<dummyhandler::DummyHandler>() as libc::size_t);
-			let object = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
+			let (size,align) = (mem::size_of::<dummyhandler::DummyHandler>(),mem::align_of::<dummyhandler::DummyHandler>());
+			let object_ptr = alloc::heap::allocate(size,align);
+			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
+			let object = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
 			let (o,transmitter) = dummyhandler::DummyHandler::new();
 			*object = o;
 			game.event_handlers.insert(game.object_last_id,transmitter);
@@ -101,9 +104,11 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
+			let (size,align) = (mem::size_of::<wall::Wall>(),mem::align_of::<wall::Wall>());
+			let object_ptr = alloc::heap::allocate(size,align);
+			game.objects.insert(game.object_last_id,(object_ptr,size,align));
+
 			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
 			*object = wall::Wall{
 				pos: Vector{x: 50.0 ,y: 240.0},
 				dim: Vector{x: 320.0,y: 16.0 }
@@ -116,9 +121,11 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
+			let (size,align) = (mem::size_of::<wall::Wall>(),mem::align_of::<wall::Wall>());
+			let object_ptr = alloc::heap::allocate(size,align);
+			game.objects.insert(game.object_last_id,(object_ptr,size,align));
+
 			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
 			*object = wall::Wall{
 				pos: Vector{x: 80.0 ,y: 200.0},
 				dim: Vector{x: 16.0,y: 4.0 }
@@ -131,9 +138,11 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<jump_through::JumpThrough>() as libc::size_t);
+			let (size,align) = (mem::size_of::<jump_through::JumpThrough>(),mem::align_of::<jump_through::JumpThrough>());
+			let object_ptr = alloc::heap::allocate(size,align);
+			game.objects.insert(game.object_last_id,(object_ptr,size,align));
+
 			let object = (object_ptr as *mut jump_through::JumpThrough).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
 			*object = jump_through::JumpThrough{
 				pos: Vector{x: 112.0 ,y: 200.0},
 				dim: Vector{x: 16.0,y: 4.0 }
@@ -146,9 +155,11 @@ impl<'a> TdpgGame<'a>{
 		}
 
 		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<item::Item>() as libc::size_t);
+			let (size,align) = (mem::size_of::<item::Item>(),mem::align_of::<item::Item>());
+			let object_ptr = alloc::heap::allocate(size,align);
+			game.objects.insert(game.object_last_id,(object_ptr,size,align));
+
 			let object = (object_ptr as *mut item::Item).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
 			*object = item::Item{
 				pos: Vector{x: 160.0 ,y: 220.0},
 				dim: Vector{x: 8.0,y: 8.0 }
@@ -237,8 +248,8 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 #[unsafe_destructor]
 impl<'a> Drop for TdpgGame<'a>{
 	fn drop(&mut self){
-		for (_,&object) in self.objects.iter_mut(){unsafe{
-			libc::funcs::c95::stdlib::free(mem::transmute(object));
+		for &(object,size,align) in self.objects.values(){unsafe{
+			alloc::heap::deallocate(mem::transmute(object),size,align);
 		}}
 	}
 }
