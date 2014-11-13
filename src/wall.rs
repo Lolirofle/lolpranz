@@ -29,5 +29,5 @@ impl Render<()> for Wall {
 }
 
 impl Interact for Wall{
-	fn is_solid(&self,other: &Interact) -> bool{true}
+	fn is_solid(&self,_: &Interact) -> bool{true}
 }

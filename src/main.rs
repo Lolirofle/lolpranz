@@ -1,7 +1,7 @@
 #![feature(globs)]
 #![feature(tuple_indexing)]
 #![feature(unsafe_destructor)]
-#![feature(if_let)]
+#![feature(if_let,while_let)]
 
 extern crate core;
 extern crate collections;

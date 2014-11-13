@@ -29,5 +29,5 @@ impl Render<()> for Item {
 }
 
 impl Interact for Item{
-	fn is_solid(&self,other: &Interact) -> bool{false}
+	fn is_solid(&self,_: &Interact) -> bool{false}
 }

@@ -3,7 +3,7 @@ extern crate "2dgl"as tdgl;
 use core::num::Zero;
 use tdgl::data::vector2::Vector as VectorTrait;
 use tdgl::data::vector2::coord_vector::Vector;
-use tdgl::game::gameloop::{Update,Render,EventHandler};
+use tdgl::game::gameloop::{Update,Render};
 use tdgl::graphics::renderer::Renderer;
 use std::time::Duration;
 
@@ -13,7 +13,6 @@ use game::TdpgGame;
 
 pub const MOVE_VELOCITY : f32 = 1.5;
 
-#[deriving(Clone)]
 pub struct Player{
 	player_id: u8,
 
@@ -26,10 +25,14 @@ pub struct Player{
 
 	//States
 	move_velocity: f32,
+	
+	event_receiver: Receiver<event::Event>,
 }
 impl Player{
-	pub fn new(player_id: u8,position: Vector<f32>) -> Player{
-		return Player{
+	pub fn new(player_id: u8,position: Vector<f32>) -> (Player,Sender<event::Event>){
+		let (transmitter,receiver) = channel();
+		return (Player{
+			event_receiver: receiver,
 			player_id: player_id,
 
 			position: position,
@@ -38,7 +41,7 @@ impl Player{
 			jump_velocity: 6.0,
 			move_velocity: 0.0,
 			move_acceleration: 0.25,
-		};
+		},transmitter);
 	}
 }
 impl Position for Player{
@@ -53,6 +56,22 @@ impl Velocity for Player{
 }
 impl<'a> Update<(u32,&'a TdpgGame<'a>)> for Player{
 	fn update(&mut self,(id,game): (u32,&TdpgGame),_ : Duration){
+		//Handle events
+		while let Ok(e) = self.event_receiver.try_recv(){
+			match e{
+				event::Player(player_id,pe) => if self.player_id == player_id{match pe{
+					event::Jump => {
+						self.velocity.y -= self.jump_velocity;//TODO: `should_jump` because of collision checking for if standing on something
+					},
+					event::Move(vel_x) => {
+						self.move_velocity = vel_x*MOVE_VELOCITY;
+					},
+					_ => {}
+				}},
+				//_=> {}
+			}
+		}
+
 		//TODO: Optimize everything, including finding better methods for doing these things. At least it's working now
 
 		//Gravity affecting velocity
@@ -114,24 +133,7 @@ impl Render<()> for Player{
 }
 
 impl Interact for Player{
-	fn is_solid(&self,other: &Interact) -> bool{true}
-}
-
-impl EventHandler<event::Event> for Player{
-	fn event(&mut self,e: event::Event){//TODO: Event system with `comm::channel()`?
-		match e{
-			event::Player(player_id,pe) => if self.player_id == player_id{match pe{
-				event::Jump => {
-					self.velocity.y -= self.jump_velocity;//TODO: `should_jump` because of collision checking for if standing on something
-				},
-				event::Move(vel_x) => {
-					self.move_velocity = vel_x*MOVE_VELOCITY;
-				},
-				_ => {}
-			}},
-			//_=> {}
-		}
-	}
+	fn is_solid(&self,_: &Interact) -> bool{true}
 }
 
 //fn towards_zero<T>(a: &T,b: &T) -> T where T: std::num::Signed{

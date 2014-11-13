@@ -30,7 +30,7 @@ pub struct TdpgGame<'a>{
 	objects       : HashMap<u32,*mut libc::types::common::c95::c_void>,
 	renderables   : HashMap<u32,&'a Render<()> + 'a>,//TODO: Layer/depth/render order using BTreeMap<u8,HashMap<u32,&'a Render<()> + 'a>>,
 	updatables    : HashMap<u32,&'a mut Update<(u32,&'a TdpgGame<'a>)> + 'a>,
-	event_handlers: HashMap<u32,&'a mut EventHandler<event::Event> + 'a>,
+	event_handlers: HashMap<u32,Sender<event::Event>>,
 	pub interactables : HashMap<u32,&'a mut Interact + 'a>,
 
 	pub gravity: f32,
@@ -53,15 +53,18 @@ impl<'a> TdpgGame<'a>{
 			max_velocity  : 8.0,
 		};
 
+		//TODO: Can we use std::cell::UnsafeCell?
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
 			let object: &'a mut player::Player = (object_ptr as *mut player::Player).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
-			*object = player::Player::new(0,Vector{x: 60.0,y: 0.0});
+
+			let (o,transmitter) = player::Player::new(0,Vector{x: 60.0,y: 0.0});
+			*object = o;
+			game.event_handlers.insert(game.object_last_id,transmitter);
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
-			game.event_handlers.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 
 			game.object_last_id+=1;
@@ -69,21 +72,37 @@ impl<'a> TdpgGame<'a>{
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<player::Player>() as libc::size_t);
-			let object: &'a mut player::Player = (object_ptr as *mut player::Player).as_mut().unwrap();
+			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
-			*object = player::Player::new(1,Vector{x: 100.0,y: 0.0});
+
+			let (o,transmitter) = player::Player::new(1,Vector{x: 100.0,y: 0.0});
+			*object = o;
+			game.event_handlers.insert(game.object_last_id,transmitter);
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
-			game.event_handlers.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
+
+			game.object_last_id+=1;
+		}
+
+		unsafe{
+			let object_ptr = libc::malloc(mem::size_of::<dummyhandler::DummyHandler>() as libc::size_t);
+			let object = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
+			game.objects.insert(game.object_last_id,object_ptr);
+
+			let (o,transmitter) = dummyhandler::DummyHandler::new();
+			*object = o;
+			game.event_handlers.insert(game.object_last_id,transmitter);
+		
+			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut dummyhandler::DummyHandler>(&object));
 
 			game.object_last_id+=1;
 		}
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
-			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
+			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
 			*object = wall::Wall{
 				pos: Vector{x: 50.0 ,y: 240.0},
@@ -98,7 +117,7 @@ impl<'a> TdpgGame<'a>{
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<wall::Wall>() as libc::size_t);
-			let object: &'a mut wall::Wall = (object_ptr as *mut wall::Wall).as_mut().unwrap();
+			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
 			*object = wall::Wall{
 				pos: Vector{x: 80.0 ,y: 200.0},
@@ -113,7 +132,7 @@ impl<'a> TdpgGame<'a>{
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<jump_through::JumpThrough>() as libc::size_t);
-			let object: &'a mut jump_through::JumpThrough = (object_ptr as *mut jump_through::JumpThrough).as_mut().unwrap();
+			let object = (object_ptr as *mut jump_through::JumpThrough).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
 			*object = jump_through::JumpThrough{
 				pos: Vector{x: 112.0 ,y: 200.0},
@@ -128,7 +147,7 @@ impl<'a> TdpgGame<'a>{
 
 		unsafe{
 			let object_ptr = libc::malloc(mem::size_of::<item::Item>() as libc::size_t);
-			let object: &'a mut item::Item = (object_ptr as *mut item::Item).as_mut().unwrap();
+			let object = (object_ptr as *mut item::Item).as_mut().unwrap();
 			game.objects.insert(game.object_last_id,object_ptr);
 			*object = item::Item{
 				pos: Vector{x: 160.0 ,y: 220.0},
@@ -137,17 +156,6 @@ impl<'a> TdpgGame<'a>{
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut item::Item>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut item::Item>(&object));
-		
-			game.object_last_id+=1;
-		}
-
-		unsafe{
-			let object_ptr = libc::malloc(mem::size_of::<dummyhandler::DummyHandler>() as libc::size_t);
-			let object: &'a mut dummyhandler::DummyHandler = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
-			game.objects.insert(game.object_last_id,object_ptr);
-			*object = dummyhandler::DummyHandler;
-
-			game.event_handlers.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut dummyhandler::DummyHandler>(&object));
 		
 			game.object_last_id+=1;
 		}
@@ -217,8 +225,8 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 			_ => None
 		}{
 			Some(e) => {
-				for (_,handler) in self.event_handlers.iter_mut(){
-					handler.event(e);
+				for transmitter in self.event_handlers.values(){
+					transmitter.send(e);
 				}
 			},
 			None    => {}

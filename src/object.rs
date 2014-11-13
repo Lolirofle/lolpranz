@@ -1,6 +1,5 @@
 extern crate "2dgl"as tdgl;
 
-use std::num::Zero;
 use tdgl::data::vector2::coord_vector::Vector;
 
 pub trait Position {

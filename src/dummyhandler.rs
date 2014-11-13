@@ -1,15 +1,31 @@
 extern crate "2dgl" as tdgl;
 
-use tdgl::game::gameloop::EventHandler;
+use tdgl::game::gameloop::Update;
+use game::TdpgGame;
+use std::time::Duration;
 
 use event;
 
-pub struct DummyHandler;
+pub struct DummyHandler{
+	event_receiver: Receiver<event::Event>
+}
 
-impl EventHandler<event::Event> for DummyHandler {
-	fn event(&mut self, e: event::Event){
-		if let event::Player(player_id,event::Jump) = e{
-			println!("I said jump, {}!",player_id)
+impl DummyHandler{
+	pub fn new() -> (DummyHandler,Sender<event::Event>){
+		let (transmitter,receiver) = channel();
+		return (DummyHandler{
+			event_receiver: receiver,
+		},transmitter);
+	}
+}
+
+impl<'a> Update<(u32,&'a TdpgGame<'a>)> for DummyHandler{
+	fn update(&mut self,_: (u32,&TdpgGame),_ : Duration){
+		while let Ok(e) = self.event_receiver.try_recv(){
+			match e{
+				event::Player(player_id,event::Jump) => println!("I said jump, {}!",player_id),
+				_ => {}
+			}
 		}
 	}
 }
