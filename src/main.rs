@@ -1,12 +1,12 @@
-#![feature(globs)]
 #![feature(tuple_indexing)]
 #![feature(unsafe_destructor)]
 #![feature(if_let,while_let)]
 
-extern crate core;
+extern crate "2dgl" as tdgl;
+extern crate alloc;
 extern crate collections;
+extern crate core;
 extern crate glfw;
-extern crate "2dgl"as tdgl;
 
 use game::{TdpgGame,TdpgExit};
 use tdgl::game_handler::GameHandler as GameHandlerTrait;

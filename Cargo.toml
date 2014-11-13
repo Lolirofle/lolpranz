@@ -9,3 +9,6 @@ git = "https://github.com/bjz/glfw-rs.git"
 
 [dependencies.2dgl]
 git = "https://github.com/Lolirofle/2dgl"
+
+[dependencies.time]
+git = "https://github.com/rust-lang/time"

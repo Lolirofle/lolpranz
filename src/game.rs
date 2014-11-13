@@ -1,22 +1,20 @@
-extern crate "2dgl"as tdgl;
-extern crate alloc;
-
-use std::collections::hash_map::HashMap;
+use alloc;
 use core::mem;
-use tdgl::data::vector2::coord_vector::Vector;
-use tdgl::game::gameloop::{Update,Render,EventHandler};
-use tdgl::game::Game;
-use tdgl::graphics::renderer::Renderer;
 use glfw;
+use std::collections::hash_map::HashMap;
 use std::time::Duration;
+use tdgl::data::vector2::coord_vector::Vector;
+use tdgl::game::Game;
+use tdgl::game::gameloop::{Update,Render,EventHandler};
+use tdgl::graphics::renderer::Renderer;
 
+use dummyhandler;
 use event;
 use item;
 use jump_through;
 use object::Interact;
 use player;
 use wall;
-use dummyhandler;
 
 pub enum TdpgExit{
 	Close,
@@ -32,12 +30,17 @@ pub struct TdpgGame<'a>{
 	updatables    : HashMap<u32,&'a mut Update<(u32,&'a TdpgGame<'a>)> + 'a>,
 	event_handlers: HashMap<u32,Sender<event::Event>>,
 	pub interactables : HashMap<u32,&'a mut Interact + 'a>,
+	//to_be_destroyed: Vec<u32>,
 
 	pub gravity: f32,
 	pub max_velocity: f32,
 }
 
 impl<'a> TdpgGame<'a>{
+	/*pub fn destroy_object(&mut self,id: u32){
+		self.to_be_destroyed.push(id);
+	}*/
+
 	pub fn init() -> TdpgGame<'a>{
 		let mut game = TdpgGame{
 			should_exit: None,
@@ -53,7 +56,9 @@ impl<'a> TdpgGame<'a>{
 			max_velocity  : 8.0,
 		};
 
-		//TODO: Look into std::cell::UnsafeCell (replace some of the code?)
+		//TODO: Look into core::cell::UnsafeCell (replace some of the code?)
+		//TODO: Look into ref counting (alloc::rc) and weak refs for destroying objects (cleaning from the lists)
+		//TODO: Create some kind of "create_object" function that generalizes these steps as much as possible
 		unsafe{
 			let (size,align) = (mem::size_of::<player::Player>(),mem::align_of::<player::Player>());
 			let object_ptr = alloc::heap::allocate(size,align);

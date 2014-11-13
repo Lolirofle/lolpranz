@@ -1,11 +1,9 @@
-extern crate "2dgl"as tdgl;
-
-use tdgl::game::gameloop;
-use tdgl::game::Game;
-use tdgl::graphics::renderer::Renderer;
-use glfw;
 use glfw::{Context,Window};
+use glfw;
 use std::time::Duration;
+use tdgl::game::Game;
+use tdgl::game::gameloop;
+use tdgl::graphics::renderer::Renderer;
 
 pub struct GlfwGame<'g,Exit,G>
 	where G: Game<glfw::WindowEvent,(),Exit> + 'g
@@ -20,7 +18,7 @@ impl<'g,Exit,G> GlfwGame<'g,Exit,G>
 {
 	pub fn using_game(game: G) -> GlfwGame<'g,Exit,G>{
 		let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
-		let window = glfw.create_window(640,480,"GLTest",glfw::Windowed).expect("Failed to create GLFW window.");
+		let window = glfw.create_window(640,480,"Lolpranz",glfw::Windowed).expect("Failed to create GLFW window.");
 
 		GlfwGame{
 			glfw: glfw,

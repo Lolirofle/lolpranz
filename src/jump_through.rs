@@ -1,5 +1,3 @@
-extern crate "2dgl"as tdgl;
-
 use tdgl::data::vector2::coord_vector::Vector;
 use tdgl::game::gameloop::Render;
 use tdgl::graphics::renderer::Renderer;

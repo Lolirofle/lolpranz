@@ -1,8 +1,6 @@
-extern crate "2dgl" as tdgl;
-
-use tdgl::game::gameloop::Update;
 use game::TdpgGame;
 use std::time::Duration;
+use tdgl::game::gameloop::Update;
 
 use event;
 

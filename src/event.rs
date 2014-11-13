@@ -1,5 +1,3 @@
-extern crate "2dgl"as tdgl;
-
 #[deriving(Send,Clone)]
 pub enum PlayerEvent{
 	///(multiplier) where -1.0 <= multiplier <= 1.0

@@ -1,15 +1,13 @@
-extern crate "2dgl"as tdgl;
-
 use core::num::Zero;
-use tdgl::data::vector2::Vector as VectorTrait;
+use std::time::Duration;
 use tdgl::data::vector2::coord_vector::Vector;
+use tdgl::data::vector2::Vector as VectorTrait;
 use tdgl::game::gameloop::{Update,Render};
 use tdgl::graphics::renderer::Renderer;
-use std::time::Duration;
 
 use event;
-use object::{Position,Velocity,Dimension,Interact};
 use game::TdpgGame;
+use object::{Position,Velocity,Dimension,Interact};
 
 pub const MOVE_VELOCITY : f32 = 1.5;
 
@@ -135,7 +133,7 @@ impl Interact for Player{
 	fn is_solid(&self,_: &Interact) -> bool{true}
 }
 
-//fn towards_zero<T>(a: &T,b: &T) -> T where T: std::num::Signed{
+//fn towards_zero<T>(a: &T,b: &T) -> T where T: core::num::Signed{
 /*fn towards_zero(a: f32,b: f32) -> f32{//TODO: Move this function to a more appropriate place
 	let b2 = b * a.signum();
 	if a.abs()>b{
