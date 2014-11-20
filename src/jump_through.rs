@@ -1,20 +1,20 @@
-use tdgl::data::vector2::coord_vector::Vector;
+use tdgl::data::two_dim::vector;
 use tdgl::game::gameloop::Render;
 use tdgl::graphics::renderer::Renderer;
 
 use object::{Position,Dimension,Interact};
 
 pub struct JumpThrough {
-	pub pos: Vector<f32>,
-	pub dim: Vector<f32>,
+	pub pos: vector::Coord<f32>,
+	pub dim: vector::Coord<f32>,
 }
 
 impl Position for JumpThrough {
-	fn get_position(&self) -> Vector<f32> { self.pos }
+	fn get_position(&self) -> vector::Coord<f32> { self.pos }
 }
 
 impl Dimension for JumpThrough {
-	fn get_dimensions(&self) -> Vector<f32> { self.dim }
+	fn get_dimensions(&self) -> vector::Coord<f32> { self.dim }
 }
 
 impl Render<()> for JumpThrough {

@@ -2,28 +2,30 @@
 name = "Lolpranz"
 version = "0.0.1"
 dependencies = [
- "2dgl 0.0.2 (git+https://github.com/Lolirofle/2dgl)",
+ "2dgl 0.0.2",
  "glfw 0.0.1 (git+https://github.com/bjz/glfw-rs.git)",
- "time 0.0.1 (git+https://github.com/rust-lang/time)",
+ "num 0.0.4 (git+https://github.com/rust-lang/num)",
+ "time 0.1.0 (git+https://github.com/rust-lang/time)",
 ]
 
 [[package]]
 name = "2dgl"
 version = "0.0.2"
-source = "git+https://github.com/Lolirofle/2dgl#1e0019a4a4e02d6afb459ee1afcb9cb5271636fe"
 dependencies = [
  "gl 0.0.1 (git+https://github.com/bjz/gl-rs)",
+ "num 0.0.4 (git+https://github.com/rust-lang/num)",
+ "time 0.1.0 (git+https://github.com/rust-lang/time)",
 ]
 
 [[package]]
 name = "gcc"
-version = "0.0.1"
-source = "git+https://github.com/alexcrichton/gcc-rs#f23b4ba15348508b9ac557fc7eed2733f65bc1ee"
+version = "0.1.0"
+source = "git+https://github.com/alexcrichton/gcc-rs#96c9e44ce3dfccc47c16fcfd743a33b3b4205daf"
 
 [[package]]
 name = "gl"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#218f14c94d79331fc5487f8564dc71f7ec4a22a8"
+source = "git+https://github.com/bjz/gl-rs#41fa9cb11188583874588180166337d8b1fc1b97"
 dependencies = [
  "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs)",
 ]
@@ -31,25 +33,25 @@ dependencies = [
 [[package]]
 name = "gl_common"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#218f14c94d79331fc5487f8564dc71f7ec4a22a8"
+source = "git+https://github.com/bjz/gl-rs#41fa9cb11188583874588180166337d8b1fc1b97"
 
 [[package]]
 name = "gl_generator"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#218f14c94d79331fc5487f8564dc71f7ec4a22a8"
+source = "git+https://github.com/bjz/gl-rs#41fa9cb11188583874588180166337d8b1fc1b97"
 dependencies = [
  "gl_common 0.0.1 (git+https://github.com/bjz/gl-rs)",
  "khronos_api 0.0.2 (git+https://github.com/bjz/gl-rs)",
- "rust-xml 0.1.0 (git+https://github.com/netvl/rust-xml)",
+ "rust-xml 0.1.2-pre (git+https://github.com/netvl/rust-xml)",
 ]
 
 [[package]]
 name = "glfw"
 version = "0.0.1"
-source = "git+https://github.com/bjz/glfw-rs.git#6afb8eadf23e2ae5925e70d364c196ceab653edb"
+source = "git+https://github.com/bjz/glfw-rs.git#441de5f7edc09f3dc21a381f1f95a96b12131faf"
 dependencies = [
  "glfw-sys 3.0.4 (git+https://github.com/servo/glfw?ref=cargo-3.0.4)",
- "semver 0.1.0 (git+https://github.com/rust-lang/semver)",
+ "semver 0.1.3 (git+https://github.com/rust-lang/semver)",
 ]
 
 [[package]]
@@ -60,23 +62,28 @@ source = "git+https://github.com/servo/glfw?ref=cargo-3.0.4#765dace7e4125b87c764
 [[package]]
 name = "khronos_api"
 version = "0.0.2"
-source = "git+https://github.com/bjz/gl-rs#218f14c94d79331fc5487f8564dc71f7ec4a22a8"
+source = "git+https://github.com/bjz/gl-rs#41fa9cb11188583874588180166337d8b1fc1b97"
+
+[[package]]
+name = "num"
+version = "0.0.4"
+source = "git+https://github.com/rust-lang/num#bc9f83e7d800a69309bac8ee991e091ad9af3e5c"
 
 [[package]]
 name = "rust-xml"
-version = "0.1.0"
-source = "git+https://github.com/netvl/rust-xml#d6c57380a300b94f7e7881979dbe5459dbe4ca06"
+version = "0.1.2-pre"
+source = "git+https://github.com/netvl/rust-xml#2d9df3267aeaa4d442e1e19a4dfed733cb1397ed"
 
 [[package]]
 name = "semver"
-version = "0.1.0"
-source = "git+https://github.com/rust-lang/semver#7dca047a9cd40e929a4545b37a1917daff82f156"
+version = "0.1.3"
+source = "git+https://github.com/rust-lang/semver#29212953f839337c672d185dde74e14b5dfb1f46"
 
 [[package]]
 name = "time"
-version = "0.0.1"
-source = "git+https://github.com/rust-lang/time#76698f52381a78cf654dbedfefd04c28a9806788"
+version = "0.1.0"
+source = "git+https://github.com/rust-lang/time#afab521f3b91658a3ba2d3e877b7e01699733bef"
 dependencies = [
- "gcc 0.0.1 (git+https://github.com/alexcrichton/gcc-rs)",
+ "gcc 0.1.0 (git+https://github.com/alexcrichton/gcc-rs)",
 ]
 

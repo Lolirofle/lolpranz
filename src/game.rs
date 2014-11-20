@@ -3,7 +3,7 @@ use core::mem;
 use glfw;
 use std::collections::hash_map::HashMap;
 use std::time::Duration;
-use tdgl::data::vector2::coord_vector::Vector;
+use tdgl::data::two_dim::vector;
 use tdgl::game::Game;
 use tdgl::game::gameloop::{Update,Render,EventHandler};
 use tdgl::graphics::renderer::Renderer;
@@ -28,7 +28,7 @@ pub struct TdpgGame<'a>{
 	objects       : HashMap<u32,(*mut u8,uint,uint)>,
 	renderables   : HashMap<u32,&'a Render<()> + 'a>,//TODO: Layer/depth/render order using BTreeMap<u8,HashMap<u32,&'a Render<()> + 'a>>,
 	updatables    : HashMap<u32,&'a mut Update<(u32,&'a TdpgGame<'a>)> + 'a>,
-	event_handlers: HashMap<u32,Sender<event::Event>>,
+	event_handlers: HashMap<u32,Sender<event::Game>>,
 	pub interactables : HashMap<u32,&'a mut Interact + 'a>,
 	//to_be_destroyed: Vec<u32>,
 
@@ -59,13 +59,15 @@ impl<'a> TdpgGame<'a>{
 		//TODO: Look into core::cell::UnsafeCell (replace some of the code?)
 		//TODO: Look into ref counting (alloc::rc) and weak refs for destroying objects (cleaning from the lists)
 		//TODO: Create some kind of "create_object" function that generalizes these steps as much as possible
+		//TODO: Use channels to signal removement for all the lists?
+		//TODO: Split object data for more safety (general data (pos, vel), render data (cache), physics data), but still not entirely safe
 		unsafe{
 			let (size,align) = (mem::size_of::<player::Player>(),mem::align_of::<player::Player>());
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
 			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
-			let (o,transmitter) = player::Player::new(0,Vector{x: 60.0,y: 0.0});
+			let (o,transmitter) = player::Player::new(0,vector::Coord{x: 60.0,y: 0.0});
 			*object = o;
 			game.event_handlers.insert(game.object_last_id,transmitter);
 
@@ -82,7 +84,7 @@ impl<'a> TdpgGame<'a>{
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
 			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
-			let (o,transmitter) = player::Player::new(1,Vector{x: 100.0,y: 0.0});
+			let (o,transmitter) = player::Player::new(1,vector::Coord{x: 100.0,y: 0.0});
 			*object = o;
 			game.event_handlers.insert(game.object_last_id,transmitter);
 
@@ -115,8 +117,8 @@ impl<'a> TdpgGame<'a>{
 
 			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
 			*object = wall::Wall{
-				pos: Vector{x: 50.0 ,y: 240.0},
-				dim: Vector{x: 320.0,y: 16.0 }
+				pos: vector::Coord{x: 50.0 ,y: 240.0},
+				dim: vector::Coord{x: 320.0,y: 16.0 }
 			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
@@ -132,8 +134,8 @@ impl<'a> TdpgGame<'a>{
 
 			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
 			*object = wall::Wall{
-				pos: Vector{x: 80.0 ,y: 200.0},
-				dim: Vector{x: 16.0,y: 4.0 }
+				pos: vector::Coord{x: 80.0 ,y: 200.0},
+				dim: vector::Coord{x: 16.0,y: 4.0 }
 			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
@@ -149,8 +151,8 @@ impl<'a> TdpgGame<'a>{
 
 			let object = (object_ptr as *mut jump_through::JumpThrough).as_mut().unwrap();
 			*object = jump_through::JumpThrough{
-				pos: Vector{x: 112.0 ,y: 200.0},
-				dim: Vector{x: 16.0,y: 4.0 }
+				pos: vector::Coord{x: 112.0 ,y: 200.0},
+				dim: vector::Coord{x: 16.0,y: 4.0 }
 			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut jump_through::JumpThrough>(&object));
@@ -166,8 +168,8 @@ impl<'a> TdpgGame<'a>{
 
 			let object = (object_ptr as *mut item::Item).as_mut().unwrap();
 			*object = item::Item{
-				pos: Vector{x: 160.0 ,y: 220.0},
-				dim: Vector{x: 8.0,y: 8.0 }
+				pos: vector::Coord{x: 160.0 ,y: 220.0},
+				dim: vector::Coord{x: 8.0,y: 8.0 }
 			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut item::Item>(&object));
@@ -217,27 +219,27 @@ impl<'a> Render<()> for TdpgGame<'a>{
 impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 	fn event(&mut self,event: glfw::WindowEvent){
 		match match event{
-			glfw::KeyEvent(glfw::KeyEscape,_,glfw::Press,_) |
+			glfw::KeyEvent(glfw::Key::Escape,_,glfw::Press,_) |
 			glfw::CloseEvent => {
 				self.should_exit = Some(TdpgExit::Close);
 				None
 			},
-			glfw::KeyEvent(glfw::KeyR,_,glfw::Press,_) => {
+			glfw::KeyEvent(glfw::Key::R,_,glfw::Press,_) => {
 				self.should_exit = Some(TdpgExit::Restart);
 				None
 			},
-			glfw::KeyEvent(glfw::KeySpace,_,glfw::Press,_) |
-			glfw::KeyEvent(glfw::KeyUp   ,_,glfw::Press,_)  => Some(event::Player(0,event::Jump)),
-			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Press,_)  => Some(event::Player(0,event::Move(-1.0))),
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Press,_)  => Some(event::Player(0,event::Move(1.0))),
-			glfw::KeyEvent(glfw::KeyLeft ,_,glfw::Release,_) |
-			glfw::KeyEvent(glfw::KeyRight,_,glfw::Release,_) => Some(event::Player(0,event::Move(0.0))),
+			glfw::KeyEvent(glfw::Key::Space,_,glfw::Press,_) |
+			glfw::KeyEvent(glfw::Key::Up   ,_,glfw::Press,_)  => Some(event::Game::Player(0,event::Player::Jump)),
+			glfw::KeyEvent(glfw::Key::Left ,_,glfw::Press,_)  => Some(event::Game::Player(0,event::Player::Move(-1.0))),
+			glfw::KeyEvent(glfw::Key::Right,_,glfw::Press,_)  => Some(event::Game::Player(0,event::Player::Move(1.0))),
+			glfw::KeyEvent(glfw::Key::Left ,_,glfw::Release,_) |
+			glfw::KeyEvent(glfw::Key::Right,_,glfw::Release,_) => Some(event::Game::Player(0,event::Player::Move(0.0))),
 
-			glfw::KeyEvent(glfw::KeyW   ,_,glfw::Press,_)  => Some(event::Player(1,event::Jump)),
-			glfw::KeyEvent(glfw::KeyA ,_,glfw::Press,_)  => Some(event::Player(1,event::Move(-1.0))),
-			glfw::KeyEvent(glfw::KeyD,_,glfw::Press,_)  => Some(event::Player(1,event::Move(1.0))),
-			glfw::KeyEvent(glfw::KeyA ,_,glfw::Release,_) |
-			glfw::KeyEvent(glfw::KeyD,_,glfw::Release,_) => Some(event::Player(1,event::Move(0.0))),
+			glfw::KeyEvent(glfw::Key::W   ,_,glfw::Press,_)  => Some(event::Game::Player(1,event::Player::Jump)),
+			glfw::KeyEvent(glfw::Key::A ,_,glfw::Press,_)  => Some(event::Game::Player(1,event::Player::Move(-1.0))),
+			glfw::KeyEvent(glfw::Key::D,_,glfw::Press,_)  => Some(event::Game::Player(1,event::Player::Move(1.0))),
+			glfw::KeyEvent(glfw::Key::A ,_,glfw::Release,_) |
+			glfw::KeyEvent(glfw::Key::D,_,glfw::Release,_) => Some(event::Game::Player(1,event::Player::Move(0.0))),
 			_ => None
 		}{
 			Some(e) => {

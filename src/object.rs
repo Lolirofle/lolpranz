@@ -1,22 +1,23 @@
-use tdgl::data::vector2::coord_vector::Vector;
+use num::Signed;
+use tdgl::data::two_dim::vector;
 
 pub trait Position {
-	fn get_position(&self) -> Vector<f32>;
+	fn get_position(&self) -> vector::Coord<f32>;
 }
 
 pub trait Velocity{
-	fn get_velocity(&self) -> Vector<f32>;
+	fn get_velocity(&self) -> vector::Coord<f32>;
 }
 
 /// Object that has a dimension and therefore also a collision box
 pub trait Dimension {
-	fn get_dimensions(&self) -> Vector<f32>;
+	fn get_dimensions(&self) -> vector::Coord<f32>;
 }
 
 pub trait Interact: Dimension + Position{
 	fn is_solid(&self,other: &Interact) -> bool;
 
-	fn has_point(&self, v: Vector<f32>) -> bool {
+	fn has_point(&self, v: vector::Coord<f32>) -> bool {
 		let min = self.get_position();
 		let max = min + self.get_dimensions();
 		
@@ -26,7 +27,7 @@ pub trait Interact: Dimension + Position{
 		max.y >= v.y
 	}
 
-	fn collides_with(&self, other : &Interact, delta_position : Vector<f32>) -> bool {
+	fn collides_with(&self, other : &Interact, delta_position : vector::Coord<f32>) -> bool {
 		let self_min  = self.get_position();
 		let self_max  = self_min + self.get_dimensions();
 		let other_min = other.get_position() + delta_position;//TODO: Delta position here?
@@ -40,7 +41,7 @@ pub trait Interact: Dimension + Position{
 
 	/// Implementation is based on SAT algorithm.
 	/// Current code only works for axis-aligned rectangles
-	fn collision_check(&self,other: &Interact) -> Option<Vector<f32>>{//TODO: REname?
+	fn collision_check(&self,other: &Interact) -> Option<vector::Coord<f32>>{//TODO: REname?
 		let self_center  = self.get_dimensions()/2.0;
 		let other_center = other.get_dimensions()/2.0;
 		let gap = (self_center + other_center) - ((self.get_position() + self_center) - (other.get_position() + other_center)).abs();//TODO: Able to simplify this expression by mathematical logic?

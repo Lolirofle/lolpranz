@@ -12,3 +12,6 @@ git = "https://github.com/Lolirofle/2dgl"
 
 [dependencies.time]
 git = "https://github.com/rust-lang/time"
+
+[dependencies.num]
+git = "https://github.com/rust-lang/num"

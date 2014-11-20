@@ -1,7 +1,9 @@
-use core::num::Zero;
+use core::cmp::partial_min;
+use core::num::Float;
+use num::{Signed,Zero};
 use std::time::Duration;
-use tdgl::data::vector2::coord_vector::Vector;
-use tdgl::data::vector2::Vector as VectorTrait;
+use tdgl::data::two_dim::vector;
+use tdgl::data::two_dim::vector::Vector;
 use tdgl::game::gameloop::{Update,Render};
 use tdgl::graphics::renderer::Renderer;
 
@@ -13,10 +15,10 @@ pub const MOVE_VELOCITY : f32 = 1.5;
 
 pub struct Player{
 	player_id: u8,
-	event_receiver: Receiver<event::Event>,
+	event_receiver: Receiver<event::Game>,
 
-	position: Vector<f32>,
-	velocity: Vector<f32>,
+	position: vector::Coord<f32>,
+	velocity: vector::Coord<f32>,
 
 	//Constants
 	jump_velocity: f32,
@@ -26,14 +28,14 @@ pub struct Player{
 	move_velocity: f32,
 }
 impl Player{
-	pub fn new(player_id: u8,position: Vector<f32>) -> (Player,Sender<event::Event>){
+	pub fn new(player_id: u8,position: vector::Coord<f32>) -> (Player,Sender<event::Game>){
 		let (transmitter,receiver) = channel();
 		return (Player{
 			event_receiver: receiver,
 			player_id: player_id,
 
 			position: position,
-			velocity: Vector{x: 0.0,y: 0.0},
+			velocity: vector::Coord{x: 0.0,y: 0.0},
 
 			jump_velocity: 6.0,
 			move_velocity: 0.0,
@@ -42,25 +44,26 @@ impl Player{
 	}
 }
 impl Position for Player{
-	fn get_position(&self) -> Vector<f32>{
+	fn get_position(&self) -> vector::Coord<f32>{
 		return self.position;
 	}
 }
 impl Velocity for Player{
-	fn get_velocity(&self) -> Vector<f32>{
+	fn get_velocity(&self) -> vector::Coord<f32>{
 		return self.velocity;
 	}
 }
+
 impl<'a> Update<(u32,&'a TdpgGame<'a>)> for Player{
 	fn update(&mut self,(id,game): (u32,&TdpgGame),_ : Duration){
 		//Handle events
 		while let Ok(e) = self.event_receiver.try_recv(){
 			match e{
-				event::Player(player_id,pe) => if self.player_id == player_id{match pe{
-					event::Jump => {
+				event::Game::Player(player_id,pe) => if self.player_id == player_id{match pe{
+					event::Player::Jump => {
 						self.velocity.y -= self.jump_velocity;//TODO: `should_jump` because of collision checking for if standing on something
 					},
-					event::Move(vel_x) => {
+					event::Player::Move(vel_x) => {
 						self.move_velocity = vel_x*MOVE_VELOCITY;
 					},
 					_ => {}
@@ -76,13 +79,17 @@ impl<'a> Update<(u32,&'a TdpgGame<'a>)> for Player{
 
 		{//Movement affecting velocity //TODO: Turning around while moving makes friction apply to the other direction immediately
 			if self.velocity.x.abs() < self.move_velocity.abs(){
-				self.velocity.x = (self.move_acceleration + self.velocity.x.abs()).min(self.move_velocity.abs())*self.move_velocity.signum();
+				self.velocity.x = partial_min(
+					self.move_acceleration + self.velocity.x.abs(),
+					(self.move_velocity.abs())*self.move_velocity.signum()
+				).unwrap();//TODO: May crash
 				//self.velocity.x = self.move_velocity;
 			}
 		}
 
 		//Friction affecting velocity
 		let friction = self.velocity.unit()/16.0;
+
 		if friction.magnitude() < self.velocity.magnitude(){
 			self.velocity = self.velocity - friction;//.limit_magnitude(game.max_velocity);
 		}else{
@@ -115,8 +122,8 @@ impl<'a> Update<(u32,&'a TdpgGame<'a>)> for Player{
 }
 
 impl Dimension for Player{
-	fn get_dimensions(&self) -> Vector<f32> {
-		Vector{x: 16.0,y: 32.0}
+	fn get_dimensions(&self) -> vector::Coord<f32> {
+		vector::Coord{x: 16.0,y: 32.0}
 	}
 }
 

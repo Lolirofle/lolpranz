@@ -7,6 +7,7 @@ extern crate alloc;
 extern crate collections;
 extern crate core;
 extern crate glfw;
+extern crate num;
 
 use game::{TdpgGame,TdpgExit};
 use tdgl::game_handler::GameHandler as GameHandlerTrait;
