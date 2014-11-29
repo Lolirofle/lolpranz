@@ -2,6 +2,7 @@ use alloc;
 use core::mem;
 use glfw;
 use std::collections::hash_map::HashMap;
+use std::ptr;
 use std::time::Duration;
 use tdgl::data::two_dim::vector;
 use tdgl::game::Game;
@@ -66,10 +67,14 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
-			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
-			let (o,transmitter) = player::Player::new(0,vector::Coord{x: 60.0,y: 0.0});
-			*object = o;
-			game.event_handlers.insert(game.object_last_id,transmitter);
+			let object_ptr = object_ptr as *mut player::Player;
+			let object = object_ptr.as_mut().unwrap();
+			match player::Player::new(0,vector::Coord{x: 60.0,y: 0.0}){
+				(o,transmitter) => {
+					ptr::write(object_ptr,o);
+					game.event_handlers.insert(game.object_last_id,transmitter);
+				}
+			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
@@ -83,10 +88,14 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
-			let object = (object_ptr as *mut player::Player).as_mut().unwrap();
-			let (o,transmitter) = player::Player::new(1,vector::Coord{x: 100.0,y: 0.0});
-			*object = o;
-			game.event_handlers.insert(game.object_last_id,transmitter);
+			let object_ptr = object_ptr as *mut player::Player;
+			let object = object_ptr.as_mut().unwrap();
+			match player::Player::new(1,vector::Coord{x: 100.0,y: 0.0}){
+				(o,transmitter) => {
+					ptr::write(object_ptr,o);
+					game.event_handlers.insert(game.object_last_id,transmitter);
+				}
+			};
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
 			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut player::Player>(&object));
@@ -100,11 +109,15 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
-			let object = (object_ptr as *mut dummyhandler::DummyHandler).as_mut().unwrap();
-			let (o,transmitter) = dummyhandler::DummyHandler::new();
-			*object = o;
-			game.event_handlers.insert(game.object_last_id,transmitter);
-		
+			let object_ptr = object_ptr as *mut dummyhandler::DummyHandler;
+			let object = object_ptr.as_mut().unwrap();
+			match dummyhandler::DummyHandler::new(){
+				(o,transmitter) => {
+					ptr::write(object_ptr,o);
+					game.event_handlers.insert(game.object_last_id,transmitter);
+				}
+			};
+
 			game.updatables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut dummyhandler::DummyHandler>(&object));
 
 			game.object_last_id+=1;
@@ -115,15 +128,16 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
-			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
-			*object = wall::Wall{
+			let object_ptr = object_ptr as *mut wall::Wall;
+			let object = object_ptr.as_mut().unwrap();
+			ptr::write(object_ptr,wall::Wall{
 				pos: vector::Coord{x: 50.0 ,y: 240.0},
 				dim: vector::Coord{x: 320.0,y: 16.0 }
-			};
+			});
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
-		
+
 			game.object_last_id+=1;
 		}
 
@@ -132,15 +146,16 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
-			let object = (object_ptr as *mut wall::Wall).as_mut().unwrap();
-			*object = wall::Wall{
+			let object_ptr = object_ptr as *mut wall::Wall;
+			let object = object_ptr.as_mut().unwrap();
+			ptr::write(object_ptr,wall::Wall{
 				pos: vector::Coord{x: 80.0 ,y: 200.0},
 				dim: vector::Coord{x: 16.0,y: 4.0 }
-			};
+			});
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut wall::Wall>(&object));
-		
+
 			game.object_last_id+=1;
 		}
 
@@ -149,15 +164,16 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
-			let object = (object_ptr as *mut jump_through::JumpThrough).as_mut().unwrap();
-			*object = jump_through::JumpThrough{
+			let object_ptr = object_ptr as *mut jump_through::JumpThrough;
+			let object = object_ptr.as_mut().unwrap();
+			ptr::write(object_ptr,jump_through::JumpThrough{
 				pos: vector::Coord{x: 112.0 ,y: 200.0},
 				dim: vector::Coord{x: 16.0,y: 4.0 }
-			};
+			});
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut jump_through::JumpThrough>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut jump_through::JumpThrough>(&object));
-		
+
 			game.object_last_id+=1;
 		}
 
@@ -166,18 +182,19 @@ impl<'a> TdpgGame<'a>{
 			let object_ptr = alloc::heap::allocate(size,align);
 			game.objects.insert(game.object_last_id,(object_ptr,size,align));
 
-			let object = (object_ptr as *mut item::Item).as_mut().unwrap();
-			*object = item::Item{
+			let object_ptr = object_ptr as *mut item::Item;
+			let object = object_ptr.as_mut().unwrap();
+			ptr::write(object_ptr,item::Item{
 				pos: vector::Coord{x: 160.0 ,y: 220.0},
 				dim: vector::Coord{x: 8.0,y: 8.0 }
-			};
+			});
 
 			game.renderables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut item::Item>(&object));
 			game.interactables.insert(game.object_last_id,mem::transmute_copy::<_,&'a mut item::Item>(&object));
-		
+
 			game.object_last_id+=1;
 		}
-		
+
 		return game;
 	}
 }
@@ -256,6 +273,7 @@ impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 impl<'a> Drop for TdpgGame<'a>{
 	fn drop(&mut self){
 		for &(object,size,align) in self.objects.values(){unsafe{
+			drop(*object);//TODO: Should we drop? (destructor)
 			alloc::heap::deallocate(mem::transmute(object),size,align);
 		}}
 	}
