@@ -27,10 +27,10 @@ pub struct TdpgGame<'a>{
 
 	object_last_id: u32,
 	objects       : HashMap<u32,(*mut u8,uint,uint)>,
-	renderables   : HashMap<u32,&'a Render<()> + 'a>,//TODO: Layer/depth/render order using BTreeMap<u8,HashMap<u32,&'a Render<()> + 'a>>,
-	updatables    : HashMap<u32,&'a mut Update<(u32,&'a TdpgGame<'a>)> + 'a>,
+	renderables   : HashMap<u32,&'a (Render<()> + 'a)>,//TODO: Layer/depth/render order using BTreeMap<u8,HashMap<u32,&'a Render<()> + 'a>>,
+	updatables    : HashMap<u32,&'a mut (Update<(u32,&'a TdpgGame<'a>)> + 'a)>,
 	event_handlers: HashMap<u32,Sender<event::Game>>,
-	pub interactables : HashMap<u32,&'a mut Interact + 'a>,
+	pub interactables : HashMap<u32,&'a mut (Interact + 'a)>,
 	//to_be_destroyed: Vec<u32>,
 
 	pub gravity: f32,
@@ -236,27 +236,27 @@ impl<'a> Render<()> for TdpgGame<'a>{
 impl<'a> EventHandler<glfw::WindowEvent> for TdpgGame<'a>{
 	fn event(&mut self,event: glfw::WindowEvent){
 		match match event{
-			glfw::KeyEvent(glfw::Key::Escape,_,glfw::Press,_) |
-			glfw::CloseEvent => {
+			glfw::WindowEvent::Key(glfw::Key::Escape,_,glfw::Action::Press,_) |
+			glfw::WindowEvent::Close => {
 				self.should_exit = Some(TdpgExit::Close);
 				None
 			},
-			glfw::KeyEvent(glfw::Key::R,_,glfw::Press,_) => {
+			glfw::WindowEvent::Key(glfw::Key::R,_,glfw::Action::Press,_) => {
 				self.should_exit = Some(TdpgExit::Restart);
 				None
 			},
-			glfw::KeyEvent(glfw::Key::Space,_,glfw::Press,_) |
-			glfw::KeyEvent(glfw::Key::Up   ,_,glfw::Press,_)  => Some(event::Game::Player(0,event::Player::Jump)),
-			glfw::KeyEvent(glfw::Key::Left ,_,glfw::Press,_)  => Some(event::Game::Player(0,event::Player::Move(-1.0))),
-			glfw::KeyEvent(glfw::Key::Right,_,glfw::Press,_)  => Some(event::Game::Player(0,event::Player::Move(1.0))),
-			glfw::KeyEvent(glfw::Key::Left ,_,glfw::Release,_) |
-			glfw::KeyEvent(glfw::Key::Right,_,glfw::Release,_) => Some(event::Game::Player(0,event::Player::Move(0.0))),
+			glfw::WindowEvent::Key(glfw::Key::Space,_,glfw::Action::Press,_) |
+			glfw::WindowEvent::Key(glfw::Key::Up   ,_,glfw::Action::Press,_)  => Some(event::Game::Player(0,event::Player::Jump)),
+			glfw::WindowEvent::Key(glfw::Key::Left ,_,glfw::Action::Press,_)  => Some(event::Game::Player(0,event::Player::Move(-1.0))),
+			glfw::WindowEvent::Key(glfw::Key::Right,_,glfw::Action::Press,_)  => Some(event::Game::Player(0,event::Player::Move(1.0))),
+			glfw::WindowEvent::Key(glfw::Key::Left ,_,glfw::Action::Release,_) |
+			glfw::WindowEvent::Key(glfw::Key::Right,_,glfw::Action::Release,_) => Some(event::Game::Player(0,event::Player::Move(0.0))),
 
-			glfw::KeyEvent(glfw::Key::W   ,_,glfw::Press,_)  => Some(event::Game::Player(1,event::Player::Jump)),
-			glfw::KeyEvent(glfw::Key::A ,_,glfw::Press,_)  => Some(event::Game::Player(1,event::Player::Move(-1.0))),
-			glfw::KeyEvent(glfw::Key::D,_,glfw::Press,_)  => Some(event::Game::Player(1,event::Player::Move(1.0))),
-			glfw::KeyEvent(glfw::Key::A ,_,glfw::Release,_) |
-			glfw::KeyEvent(glfw::Key::D,_,glfw::Release,_) => Some(event::Game::Player(1,event::Player::Move(0.0))),
+			glfw::WindowEvent::Key(glfw::Key::W   ,_,glfw::Action::Press,_)  => Some(event::Game::Player(1,event::Player::Jump)),
+			glfw::WindowEvent::Key(glfw::Key::A ,_,glfw::Action::Press,_)  => Some(event::Game::Player(1,event::Player::Move(-1.0))),
+			glfw::WindowEvent::Key(glfw::Key::D,_,glfw::Action::Press,_)  => Some(event::Game::Player(1,event::Player::Move(1.0))),
+			glfw::WindowEvent::Key(glfw::Key::A ,_,glfw::Action::Release,_) |
+			glfw::WindowEvent::Key(glfw::Key::D,_,glfw::Action::Release,_) => Some(event::Game::Player(1,event::Player::Move(0.0))),
 			_ => None
 		}{
 			Some(e) => {

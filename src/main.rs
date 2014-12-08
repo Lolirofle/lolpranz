@@ -1,6 +1,4 @@
-#![feature(tuple_indexing)]
 #![feature(unsafe_destructor)]
-#![feature(if_let,while_let)]
 
 extern crate "2dgl" as tdgl;
 extern crate alloc;
