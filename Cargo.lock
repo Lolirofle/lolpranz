@@ -11,7 +11,7 @@ dependencies = [
 [[package]]
 name = "2dgl"
 version = "0.0.2"
-source = "git+https://github.com/Lolirofle/2dgl#bc60ce3bc7b833278a143d31a0db7515bf92eefd"
+source = "git+https://github.com/Lolirofle/2dgl#a3f3a91c82e674d640d5bf37a1ae27e1e1f330f8"
 dependencies = [
  "gl 0.0.1 (git+https://github.com/Lolirofle/2dgl)",
  "num 0.1.0 (git+https://github.com/rust-lang/num)",
@@ -26,7 +26,7 @@ source = "git+https://github.com/alexcrichton/gcc-rs#f7b47d923a78155f88d13c7030e
 [[package]]
 name = "gl"
 version = "0.0.1"
-source = "git+https://github.com/Lolirofle/2dgl#bc60ce3bc7b833278a143d31a0db7515bf92eefd"
+source = "git+https://github.com/Lolirofle/2dgl#a3f3a91c82e674d640d5bf37a1ae27e1e1f330f8"
 dependencies = [
  "gl_generator 0.0.4 (git+https://github.com/bjz/gl-rs)",
 ]
@@ -34,12 +34,12 @@ dependencies = [
 [[package]]
 name = "gl_common"
 version = "0.0.3"
-source = "git+https://github.com/bjz/gl-rs#bfdc2c6416ea6d955b3ffe1a58fb55e98f4d0108"
+source = "git+https://github.com/bjz/gl-rs#eb8d6f6b94b5668d10e288582db3cb20602846ff"
 
 [[package]]
 name = "gl_generator"
 version = "0.0.4"
-source = "git+https://github.com/bjz/gl-rs#bfdc2c6416ea6d955b3ffe1a58fb55e98f4d0108"
+source = "git+https://github.com/bjz/gl-rs#eb8d6f6b94b5668d10e288582db3cb20602846ff"
 dependencies = [
  "gl_common 0.0.3 (git+https://github.com/bjz/gl-rs)",
  "khronos_api 0.0.3 (git+https://github.com/bjz/gl-rs)",
@@ -49,7 +49,7 @@ dependencies = [
 [[package]]
 name = "glfw"
 version = "0.0.1"
-source = "git+https://github.com/bjz/glfw-rs.git#fb7c496d0df5b6ce6ce5af89858e7edbc9af8b2f"
+source = "git+https://github.com/bjz/glfw-rs.git#b0fc90e5aee2636573b3f728d282af54e9aae56f"
 dependencies = [
  "glfw-sys 3.0.4 (git+https://github.com/servo/glfw?ref=cargo-3.0.4)",
  "semver 0.1.5 (git+https://github.com/rust-lang/semver)",
@@ -63,12 +63,12 @@ source = "git+https://github.com/servo/glfw?ref=cargo-3.0.4#765dace7e4125b87c764
 [[package]]
 name = "khronos_api"
 version = "0.0.3"
-source = "git+https://github.com/bjz/gl-rs#bfdc2c6416ea6d955b3ffe1a58fb55e98f4d0108"
+source = "git+https://github.com/bjz/gl-rs#eb8d6f6b94b5668d10e288582db3cb20602846ff"
 
 [[package]]
 name = "num"
 version = "0.1.0"
-source = "git+https://github.com/rust-lang/num#146410c9186aa8fe338d2fbbbedc668f259b22d8"
+source = "git+https://github.com/rust-lang/num#62f37e35def89b18dc42bba5e66fdcb7f853e5fb"
 
 [[package]]
 name = "semver"
