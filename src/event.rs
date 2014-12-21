@@ -1,4 +1,4 @@
-#[deriving(Send,Clone)]
+#[deriving(Send,Copy,Clone)]
 pub enum Player{
 	///(multiplier) where -1.0 <= multiplier <= 1.0
 	Move(f32),
@@ -6,7 +6,7 @@ pub enum Player{
 	Action,
 }
 
-#[deriving(Send,Clone)]
+#[deriving(Send,Copy,Clone)]
 pub enum Game{
 	///(player id,player event)
 	Player(u8,Player)

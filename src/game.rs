@@ -17,6 +17,7 @@ use object::Interact;
 use player;
 use wall;
 
+#[deriving(Send,Copy,Clone)]
 pub enum TdpgExit{
 	Close,
 	Restart,
